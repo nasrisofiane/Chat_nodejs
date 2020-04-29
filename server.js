@@ -74,6 +74,11 @@ app.get('/logout', (req, res) =>{
  */
 socketIo.sockets.on('connection', socket => {
 
+    if(typeof(socket.handshake.session.socketId) === 'undefined'){
+        socket.handshake.session.socketId = socket.id;
+        socket.handshake.session.save();
+    }
+    
     //Store the session username in a variable
     let socketUsername = socket.handshake.session.username ? socket.handshake.session.username : null;
 
@@ -107,7 +112,6 @@ socketIo.sockets.on('connection', socket => {
             
             socket.emit('redirectTo', '/chat');
         }
-        
     });
 
     if(socketUsername){
@@ -132,12 +136,14 @@ socketIo.sockets.on('connection', socket => {
                     messages : lastMessages.reverse()//Order last messages in the right order.
                 }
             );
+
+            getConnectedUsers(socket);
         });
     }
     
     //Perform action when the client triggered the "message" event
     socket.on('message', message =>{
-
+        
         //Check if the user has a userName
         if(socketUsername){
 
@@ -169,7 +175,7 @@ socketIo.sockets.on('connection', socket => {
                     userName : socketUsername, 
                     message : message
                 },
-                (results) => console.log(results.result)
+                (results) => null
             );
         }
         else{
@@ -191,9 +197,45 @@ socketIo.sockets.on('connection', socket => {
             }
         );
         
+        // socket.handshake.session.isConnected = false;
         socketUsername = null;
         socket.emit('redirectTo', '/logout');
     });
 
+    if(socketsPerUser(socket) > 1){
+        socket.emit('alreadyConnected', `You're already connected`);
+        socket.disconnect();
+    }
+
 });
 
+/**
+ * Retrieve all connected users
+ */
+getConnectedUsers = socket =>{
+    let users = [];
+
+    Object.keys(socketIo.sockets.clients().connected).forEach((item) => {
+        if(typeof(socketIo.sockets.clients().connected[item].handshake.session.username) !== 'undefined'){
+            users.push(socketIo.sockets.clients().connected[item].handshake.session.username);          
+        }
+    });
+
+    socket.broadcast.emit('connectedUsers', users);
+    socket.emit('connectedUsers', users);
+}
+
+/**
+ * Return the number of connected sockets for a session
+ */
+socketsPerUser = socket =>{
+    let socketsNb = 0;
+
+    Object.keys(socketIo.sockets.clients().connected).forEach((item) => {
+        if(socketIo.sockets.clients().connected[item].handshake.sessionID == socket.handshake.sessionID){
+            socketsNb += 1;     
+        }
+    });
+
+    return socketsNb;
+}

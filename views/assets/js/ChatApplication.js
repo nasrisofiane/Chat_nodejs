@@ -1,6 +1,7 @@
 class ChatApplication{
     constructor(){
         this.socket = io.connect('http://localhost:8080/');
+        this.socket.on('alreadyConnected', message => this.alreadyConnected(message));
 
         if(window.location.pathname === '/login'){
             this.initializeLoginEvents();
@@ -40,7 +41,10 @@ class ChatApplication{
 
         //Event that retrieve new messages once the server triggered the event. 
         this.socket.on('message', message => this.addMessageToChatArea(message));
+
+        this.socket.on('connectedUsers', users => this.createUsersList(users));
         
+        //Send message when enter key is pressed
         messageInput.addEventListener("keydown", event => {
                 if (event.keyCode === 13) {
                     this.sendMessage();
@@ -49,6 +53,24 @@ class ChatApplication{
             }
         );
 
+    }
+
+    createUsersList = (users) =>{
+        let usersContainer = document.getElementById('users-list');
+        users.map(user => usersContainer.innerHTML += `<div class="col-1 p-1 border text-center align-items-center justify-content-center">
+            <section class="container-fluid p-0">    
+                <p class="mb-1">${user}</p> 
+                <div class="row">
+                    <img class="col-12" src="https://www.pngitem.com/pimgs/m/52-526033_unknown-person-icon-png-transparent-png.png"/>
+                </div> 
+            </section>
+        </div>`);
+        console.log(users);
+    }
+
+    alreadyConnected = (message) =>{
+        let body = document.body;
+        body.innerHTML = `<div class="row h-100 align-items-center justify-content-center display-4">${message}</div>`;
     }
      
     /**
