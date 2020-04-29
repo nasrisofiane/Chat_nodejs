@@ -1,0 +1,9 @@
+html{
+    height: 100%;
+}
+
+#chat-area{
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 300px;
+}
