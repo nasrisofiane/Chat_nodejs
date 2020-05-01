@@ -18,6 +18,17 @@
                 <input class="rounded-0 col-sm-6 m-1 form-control" id="username-input" type="text" placeholder="Username"/>
                 <button class="rounded-0 col-sm-6 btn btn-primary m-1" id="send-username-button">Join the chat</button>
             </div>
+
+            <form action="/upload" enctype="multipart/form-data" method="post" id="image-form">
+                    <input type="file" class="d-none form-control-file" name="uploadFile" id="image-dialog">
+            </form>
+            
+            <div class="row mt-3">
+                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                    <p class="lead mb-1">Select a picture</p>
+                    <img class=" border" src="https://www.pngitem.com/pimgs/m/52-526033_unknown-person-icon-png-transparent-png.png" width="50" height="50" id="open-file-dialog" />
+                </div>
+            </div>
         </div>
     </div>
 
@@ -27,6 +38,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/ChatApplication.js"></script>
+    <script src="js/Login.js"></script>
 </body>
 </html>

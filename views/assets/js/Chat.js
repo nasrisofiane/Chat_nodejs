@@ -3,29 +3,15 @@ class ChatApplication{
         this.socket = io.connect('http://localhost:8080/');
         this.socket.on('alreadyConnected', message => this.alreadyConnected(message));
 
-        if(window.location.pathname === '/login'){
-            this.initializeLoginEvents();
-        }
-        else{
-            this.initializeChatEvents();
-        }
+        this.initializeChatEvents();
 
         //Event that redirect to a page if the server trigger the event "redirectTo"
         this.socket.on('redirectTo', redirectTo => window.location.pathname = redirectTo);
     }
 
-    connectToChat = () =>{
-        let userName = document.getElementById('username-input').value;
-
-        //Trigger the "newUser" event on server side by sending the username.
-        this.socket.emit('newUser', userName);
-    }
-
-    initializeLoginEvents = () =>{
-        let buttonSendUsername = document.getElementById('send-username-button');
-        buttonSendUsername.addEventListener('click', () => this.connectToChat());
-    }
-
+    /**
+     * Initialize events for the chat page
+     */
     initializeChatEvents = () =>{
         let buttonSendMessage = document.getElementById('send-message-button');
         let buttonDisconnect = document.getElementById('disconnect-button');
@@ -55,19 +41,28 @@ class ChatApplication{
 
     }
 
+    /**
+     * Create a list of connected users
+     */
     createUsersList = (users) =>{
         let usersContainer = document.getElementById('users-list');
-        users.map(user => usersContainer.innerHTML += `<div class="col-1 p-1 border text-center align-items-center justify-content-center">
+        
+        usersContainer.innerHTML = '';
+        users.map(user => usersContainer.innerHTML += `<div class="col-lg-1 border text-center align-items-center justify-content-center p-0">
             <section class="container-fluid p-0">    
-                <p class="mb-1">${user}</p> 
+                <p class="mb-1 lead text-center">${user.username}</p> 
                 <div class="row">
-                    <img class="col-12" src="https://www.pngitem.com/pimgs/m/52-526033_unknown-person-icon-png-transparent-png.png"/>
+                    <img class="col-12" src="${user.image}"/>
                 </div> 
             </section>
         </div>`);
+
         console.log(users);
     }
 
+    /**
+     * Display an error message if the user is already connected
+     */
     alreadyConnected = (message) =>{
         let body = document.body;
         body.innerHTML = `<div class="row h-100 align-items-center justify-content-center display-4">${message}</div>`;
