@@ -21,23 +21,29 @@ const logout = (req, res) =>{
 }
 
 /**
- * Upload a file to the server data only if an image is received from the user
+ * Check sent image and username if that correspond to the rules and redirect to the depending view.
  */
-const upload = (req, res) => {
-    
-    if(req.file && (req.file.mimetype === 'image/png' || req.file.mimetype === 'image/jpeg')) {
-        res.redirect('/');
+const login = (req, res) =>{
+
+    //Allow only alphanumeric character and delete all other characters.
+    userName =  req.body.username.replace(/[^A-Z0-9]/ig, "");
+
+    if(userName.length && !req.session.username){
+        //Attach the username to his current session
+        req.session.username = userName;
+            
+        //Attach the correct path to the user's image
         req.session.image = `${usersImagesPath}/${req.file.filename}`;
         req.session.save();
-        
+        res.redirect('/');
     }
-    else {
+    else{
         res.redirect('/logout');
-    };
+    }
 }
 
 module.exports = {
     chat : chat,
+    login : login,
     logout : logout,
-    upload : upload  
 }

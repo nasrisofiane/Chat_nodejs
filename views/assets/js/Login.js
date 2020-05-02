@@ -1,14 +1,14 @@
 class Login{
     constructor(){
-        this.socket = io.connect('http://localhost:8080/');
-        this.socket.on('alreadyConnected', message => this.alreadyConnected(message));
+        // this.socket = io.connect('http://localhost:8080/');
+        // this.socket.on('alreadyConnected', message => this.alreadyConnected(message));
 
         this.initializeLoginEvents();
     }
 
     //submit the file from the form
     addFileToServer = () => {
-        document.forms["image-form"].submit();
+        // document.forms["image-form"].submit();
     }
 
     /**
@@ -18,7 +18,7 @@ class Login{
         let userName = document.getElementById('username-input').value;
 
         //Trigger the "newUser" event on server side by sending the username.
-        this.socket.emit('newUser', userName);
+        // this.socket.emit('newUser', userName);
         this.addFileToServer();
     }
 

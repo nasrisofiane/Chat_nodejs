@@ -1,7 +1,8 @@
 module.exports = (server, session, database) => {
 
-    const sharedsession = require("express-socket.io-session");
-    const socketIo = require('socket.io')(server);
+    const 
+        sharedsession = require("express-socket.io-session"),
+        socketIo = require('socket.io')(server);
 
     socketIo.use(sharedsession(session));
 
@@ -19,84 +20,96 @@ module.exports = (server, session, database) => {
      * Event that will initialize applications events once a session connected to the server.
      */
     socketIo.sockets.on('connection', socket => {
-
-        if(typeof(socket.handshake.session.socketId) === 'undefined'){
-            socket.handshake.session.socketId = socket.id;
-            socket.handshake.session.save();
-        }
-        
         //Store the session username in a variable
-        let socketUsername = socket.handshake.session.username ? socket.handshake.session.username : null;
+        let username = socket.handshake.session.username ? socket.handshake.session.username : null;
 
-        //Variable that will contains the lasts messages from the database.
-        let lastMessages = null;
+        socket.on('disconnect', () =>{
+            if(socketsPerUser(socket) === 0 && (!socket.handshake.session.lastConnection || canNotify(socket))){
 
-        //Function that retrieve few documents from a collection with a number of results and a callback function.
-        database.actionToDatabase(database.getFewDocuments, 'messages', 4, (results) => lastMessages = results);
-
-        //Perform action when the client triggered the "newUser" event
-        socket.on('newUser', userName =>{
-            
-            //Allow only alphanumeric character and delete all other characters.
-            userName = userName.replace(/[^A-Z0-9]/ig, "");
-
-            if(userName.length && !socketUsername){
-
-                //Attach the username to his current session
-                socket.handshake.session.username = userName;
-                socket.handshake.session.save();
-                
-                //Send a message to everyone from the chat that a new user has joined the chat
+                //Send a message to the chat to alert that the user leaved the chat
                 socket.broadcast.emit(
-                    'message', 
+                    'message',
                     {
-                        messageType : messageType.CONNECTION.NOTME, 
-                        userName : socket.handshake.session.username,
-                        message : `joined the chat`
+                        messageType : messageType.DISCONNECTED,
+                        userName : username,
+                        message : 'leaved the chat'
                     }
                 );
+                getConnectedUsers(socket);
+                
             }
         });
 
-        if(socketUsername){
-
-            socket.on('chatJoined', () =>{
-
-                //Send a welcome message to the user that succesfully connected. 
-                socket.emit(
-                    'message',
-                    {
-                        messageType: messageType.CONNECTION.ME, 
-                        userName : socket.handshake.session.username,
-                        message : `You're connected as`
-                    }
-                );
-        
-                //Send a message to the user session to retrieve lasts messages from the chat.
-                socket.emit(
-                    'lastMessages', 
-                    {
-                        messageType: messageType.CONNECTION.ME,
-                        messages : lastMessages.reverse()//Order last messages in the right order.
-                    }
-                );
-
-                getConnectedUsers(socket);
-            });
+        if(!username){
+            socket.disconnect();
         }
+
+        if(socketsPerUser(socket) > 1){
+            socket.emit('alreadyConnected', `You're already connected`);
+            socket.disconnect();
+        }
+
+        if(typeof(socket.handshake.session.socketId) === 'undefined'){
+            socket.handshake.session.socketId = socket.id;
+        }
+
+        if(!socket.handshake.session.lastConnection || canNotify(socket)){
+            //Send a message to everyone from the chat that a new user has joined the chat
+            socket.broadcast.emit(
+                'message', 
+                {
+                    messageType : messageType.CONNECTION.NOTME, 
+                    userName : socket.handshake.session.username,
+                    message : `joined the chat`
+                }
+            );
+
+            socket.handshake.session.lastConnection = new Date();
+            
+        }
+
+        //Save sessions variables
+        socket.handshake.session.save();
+
+        //Variable that will contains the lasts messages from the database.
+        let lastMessages = [];
         
+        //Function that retrieve few documents from a collection with a number of results and a callback function.
+        database.actionToDatabase(database.getFewDocuments, 'messages', 4, (results) => lastMessages = results);
+
+        //Send a welcome message to the user that succesfully connected. 
+        socket.emit(
+            'message',
+            {
+                messageType: messageType.CONNECTION.ME, 
+                userName : socket.handshake.session.username,
+                message : `You're connected as`
+            }
+        );
+    
+        //Send a message to the user session to retrieve lasts messages from the chat.
+        socket.emit(
+            'lastMessages', 
+            {
+                messageType: messageType.CONNECTION.ME,
+                messages : lastMessages.reverse()//Order last messages in the right order.
+            }
+        );
+        
+        getConnectedUsers(socket);
+
         //Perform action when the client triggered the "message" event
         socket.on('message', message =>{
             
             //Check if the user has a userName
-            if(socketUsername){
+            if(username){
 
                 //Send the message that session sent to himself
                 socket.emit(
                     'message',
                     {   
                         messageType : messageType.MESSAGE,
-                        userName : socketUsername, 
+                        userName : username, 
                         message : message
                     }
                 );
@@ -106,7 +119,7 @@ module.exports = (server, session, database) => {
                     'message',
                     {
                         messageType : messageType.MESSAGE,
-                        userName : socketUsername, 
+                        userName : username, 
                         message : message
                     }
                 );
@@ -116,47 +129,16 @@ module.exports = (server, session, database) => {
                     database.insertSingleDocument,
                     'messages',
                     {
-                        userName : socketUsername, 
+                        userName : username, 
                         message : message
                     },
                     (results) => null
                 );
             }
             else{
-                socket.emit('redirectTo', '/login');
+                socket.disconnect();
             }
-
         });
-
-        //Perform action when the client triggered the "disconnect" event
-        socket.on('logout', () =>{
-
-            //Send a message to everyone from the chat that the user leaved the chat
-            socket.broadcast.emit(
-                'message',
-                {
-                    messageType : messageType.DISCONNECTED,
-                    userName : socketUsername,
-                    message : 'leaved the chat'
-                }
-            );
-            
-            // socket.handshake.session.isConnected = false;
-            socketUsername = null;
-            socket.emit('redirectTo', '/logout');
-        });
-
-        socket.on('disconnect', () =>{
-            if(socketsPerUser(socket) === 0){
-                getConnectedUsers(socket);
-            }
-        })
-
-        if(socketsPerUser(socket) > 1){
-            socket.emit('alreadyConnected', `You're already connected`);
-            socket.disconnect();
-        }
-
     });
 
     /**
@@ -178,6 +160,17 @@ module.exports = (server, session, database) => {
 
         socket.broadcast.emit('connectedUsers', users);
         socket.emit('connectedUsers', users);
+    }
+
+    /**
+     * Return true or false if the user is able to send notification to broadcaster.
+     */
+    canNotify = (socket) =>{
+        if(new Date(socket.handshake.session.lastConnection.getTime() + 1*60000) < new Date()){
+            return true;
+        }
+
+        return false;
     }
 
     /**

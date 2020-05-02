@@ -1,6 +1,7 @@
-const router = require('express').Router();
-const controller = require('./controller.js');
-const multerConfig = require('./utils/multerConfig.js');
+const 
+    router = require('express').Router(),
+    controller = require('./controller.js'),
+    multerConfig = require('./utils/multerConfig.js');
 
 
 /**
@@ -9,11 +10,13 @@ const multerConfig = require('./utils/multerConfig.js');
 router.get('/', controller.chat);
 
 /**
+ * Send post parameters to controller function
+ */
+router.post('/', multerConfig.upload.single('uploadFile'), controller.login);
+
+/**
  * The logout route will redirect to login once the destroy session has been done.
  */
 router.get('/logout', controller.logout);
-
-
-router.post('/upload', multerConfig.upload.single('uploadFile'), controller.upload);
 
 module.exports = router;

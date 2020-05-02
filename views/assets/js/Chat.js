@@ -6,7 +6,7 @@ class ChatApplication{
         this.initializeChatEvents();
 
         //Event that redirect to a page if the server trigger the event "redirectTo"
-        this.socket.on('redirectTo', redirectTo => window.location.pathname = redirectTo);
+        // this.socket.on('redirectTo', redirectTo => window.location.pathname = redirectTo);
     }
 
     /**
@@ -48,11 +48,11 @@ class ChatApplication{
         let usersContainer = document.getElementById('users-list');
         
         usersContainer.innerHTML = '';
-        users.map(user => usersContainer.innerHTML += `<div class="col-lg-1 border text-center align-items-center justify-content-center p-0">
+        users.map(user => usersContainer.innerHTML += `<div class="users-square col-lg-1 text-center align-items-center justify-content-center p-0">
             <section class="container-fluid p-0">    
                 <p class="mb-1 lead text-center">${user.username}</p> 
-                <div class="row">
-                    <img class="col-12" src="${user.image}"/>
+                <div class="row mb-2 align-items-center justify-content-center">
+                    <img class="col-10" src="${user.image}"/>
                 </div> 
             </section>
         </div>`);
