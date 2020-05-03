@@ -19,4 +19,7 @@ router.post('/', multerConfig.upload.single('uploadFile'), controller.login);
  */
 router.get('/logout', controller.logout);
 
-module.exports = router;
+module.exports = {
+    router : router,
+    controllerDatabase : controller.database
+};

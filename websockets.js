@@ -70,12 +70,20 @@ module.exports = (server, session, database) => {
 
         //Save sessions variables
         socket.handshake.session.save();
-
-        //Variable that will contains the lasts messages from the database.
-        let lastMessages = [];
         
         //Function that retrieve few documents from a collection with a number of results and a callback function.
-        database.actionToDatabase(database.getFewDocuments, 'messages', 4, (results) => lastMessages = results);
+        database.actionToDatabase(database.getFewDocuments, 'messages', { limit : 4, searchByFields :{} }, (results) => {
+                
+                //Send a message to the user session to retrieve lasts messages from the chat.
+                socket.emit(
+                    'lastMessages', 
+                    {
+                        messageType: messageType.CONNECTION.ME,
+                        messages : results.reverse()//Order last messages in the right order.
+                    }
+                );
+            }
+        );
 
         //Send a welcome message to the user that succesfully connected. 
         socket.emit(
@@ -87,14 +95,7 @@ module.exports = (server, session, database) => {
             }
         );
     
-        //Send a message to the user session to retrieve lasts messages from the chat.
-        socket.emit(
-            'lastMessages', 
-            {
-                messageType: messageType.CONNECTION.ME,
-                messages : lastMessages.reverse()//Order last messages in the right order.
-            }
-        );
+        
         
         getConnectedUsers(socket);
 

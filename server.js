@@ -1,11 +1,12 @@
 const 
+    MongoDbConnection = require('./MongoDbConnection').MongoDbConnection,
+    database = new MongoDbConnection(),
     express = require('express'),
     app = express(),
-    routes = require('./routes.js'),
+    routes = require('./routes.js').router,
     server = require('http').Server(app),
-    sessionstore = require('sessionstore'),
-    MongoDbConnection = require('./MongoDbConnection').MongoDbConnection,
-    database = new MongoDbConnection();
+    sessionstore = require('sessionstore');
+    require('./routes').controllerDatabase(database);
 
 const customSessionsStore = sessionstore.createSessionStore({
     type: 'mongodb',
@@ -31,8 +32,7 @@ app.use(session);
 app.use(express.static('public'));
 app.use("/css", express.static(__dirname + '/views/assets/css'));
 app.use("/js", express.static(__dirname + '/views/assets/js'));
-// app.use(express.urlencoded());
-// app.use(express.json());
+
 app.use(routes);
 
 

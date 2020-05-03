@@ -11,7 +11,7 @@ class MongoDbConnection{
     this.databaseName = 'chat';
 
     //Every action to database will check if a collection is well writed by checking in this array with an assert function.
-    this.collectionsName = { messages : 'messages'};
+    this.collectionsName = { messages : 'messages', sessions : 'sessions'};
   }
 
   /**
@@ -89,14 +89,14 @@ class MongoDbConnection{
    * @db a database
    * @callback callback that will handle an action at the end of the function
    * @collectionName the collection where you want to retrieve the datas
-   * @numberOfRecored the number of records that you wants to retrieve from the collection
+   * @datas contain the query data limit and searchByFields
    */
-  getFewDocuments = (db, callback, collectionName, numberOfRecords) =>{
+  getFewDocuments = (db, callback, collectionName, datas = { limit : 0, searchByFields : {}}) =>{
 
     this.assert.equal(collectionName, this.collectionsName[collectionName]);
     let collection = db.collection(collectionName);
 
-    collection.find().sort({_id: -1}).limit(numberOfRecords).toArray((err, result) => {
+    collection.find(datas.searchByFields).sort({_id: -1}).limit(datas.limit).toArray((err, result) => {
       this.assert.equal(err, null);
       callback(result);
     });
