@@ -28,6 +28,11 @@ require('./websockets.js')(server, session, database);
 server.listen(8080);
 app.use(session);
 
+//views engine
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jsx');
+app.engine('jsx', require('express-react-views').createEngine());
+
 //Retrieve needed ressources from customs paths.
 app.use(express.static('public'));
 app.use("/css", express.static(__dirname + '/views/assets/css'));

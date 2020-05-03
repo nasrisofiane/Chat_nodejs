@@ -7,7 +7,8 @@ let database = null;
 const chat = (req, res) =>{
     
     if(!req.session.username){
-        res.sendFile(`${__dirname}/views/login.html`);
+        // res.sendFile(`${__dirname}/views/login.html`);
+        res.render('index', { name: 'John' });
     }
     else{
         res.sendFile(`${__dirname}/views/chat.html`);
