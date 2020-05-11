@@ -57,7 +57,6 @@ class MongoDbConnection{
       this.assert.equal(datas.length, result.result.n);
       this.assert.equal(datas.length, result.ops.length);
 
-      console.log(`Inserted ${result.ops.length} documents into ${collectionName}`);
       callback(result);
     });
   }
@@ -79,7 +78,6 @@ class MongoDbConnection{
       this.assert.equal(1, result.result.n);
       this.assert.equal(1, result.ops.length);
 
-      console.log(`Inserted ${result.ops.length} documents into ${collectionName}`);
       callback(result);
     });
   }

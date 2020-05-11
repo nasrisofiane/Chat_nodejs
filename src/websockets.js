@@ -2,6 +2,8 @@ import sharedsession from 'express-socket.io-session';
 import socketIo from 'socket.io';
 
 let webSockets;
+let usersInChat;
+
 //Enum equivalent.
 const messageType = {
     CONNECTION: {
@@ -13,7 +15,7 @@ const messageType = {
 };
 
 const startWebsocketsApp = (server, session, database) => {
-    
+
     webSockets = socketIo(server);
     webSockets.use(sharedsession(session));
 
@@ -21,7 +23,6 @@ const startWebsocketsApp = (server, session, database) => {
      * Event that will initialize applications events once a session connected to the server.
      */
     webSockets.sockets.on('connection', socket => {
-        console.log("connected as =>" + socket.id);
 
         //Store the session username in a variable
         let username = socket.handshake.session.username ? socket.handshake.session.username : null;
@@ -68,17 +69,31 @@ const startWebsocketsApp = (server, session, database) => {
             'message',
             {
                 messageType: messageType.CONNECTION.ME,
-                userName: socket.handshake.session.username,
+                myInformations : {
+                    username : username,
+                    image : socket.handshake.session.image
+                },
                 message: `You're connected as`
             }
         );
+
+        socket.on('sendPrivateMessage', datas => {
+            datas.username = username;
+            datas.messageType = messageType.MESSAGE;
+            let socketToSendDatas = usersInChat.filter( user => user.username == datas.sendTo)[0].socketId;
+
+            if(socketToSendDatas){
+                socket.to(socketToSendDatas).emit('privateMessage', datas);
+                socket.emit('privateMessage', datas);
+            }
+        });
 
         getConnectedUsers(socket);
 
         //Perform action when the client triggered the "message" event
         socket.on('message', message => {
-            console.log(message);
-            //Check if the user has a userName
+
+            //Check if the user has a username
             if (username) {
 
                 //Send the message that session sent to himself
@@ -86,7 +101,7 @@ const startWebsocketsApp = (server, session, database) => {
                     'message',
                     {
                         messageType: messageType.MESSAGE,
-                        userName: username,
+                        username: username,
                         message: message
                     }
                 );
@@ -96,17 +111,17 @@ const startWebsocketsApp = (server, session, database) => {
                     'message',
                     {
                         messageType: messageType.MESSAGE,
-                        userName: username,
+                        username: username,
                         message: message
                     }
                 );
 
-                //Add userName and message to the database.
+                //Add username and message to the database.
                 database.actionToDatabase(
                     database.insertSingleDocument,
                     'messages',
                     {
-                        userName: username,
+                        username: username,
                         message: message
                     },
                     (results) => null
@@ -122,26 +137,21 @@ const startWebsocketsApp = (server, session, database) => {
      * Retrieve all connected users
      */
     const getConnectedUsers = socket => {
-        let users = [];
 
-        Object.keys(webSockets.sockets.clients().connected).forEach((item) => {
-            if (typeof (webSockets.sockets.clients().connected[item].handshake.session.username) !== 'undefined') {
-                let user = {
-                    username: webSockets.sockets.clients().connected[item].handshake.session.username,
-                    image: webSockets.sockets.clients().connected[item].handshake.session.image
-                };
+        database.actionToDatabase(database.getFewDocuments, 'sessions', { limit: 0 }, (results) => {
 
-                users.push(user);
-            }
+            //Filter and map to retrieve only necessary datas from users.
+            usersInChat = results.filter(
+                user => user.socketId && user.usernamet).map(
+                    user => { return { username: user.username, image: user.image, socketId: user.socketId } }
+                );
+
+            //Map usersInChat to avoid socketID in client side
+            let users = usersInChat.map(user => { return { username: user.username, image: user.image } });
+
+            socket.broadcast.emit('connectedUsers', users);
+            socket.emit('connectedUsers', users);
         });
-
-        // database.actionToDatabase(database.getFewDocuments, 'sessions', {limit : 0} , (results) => {
-        //     let usersInChat = results.filter( user => user.username ).map( user => { return { username : user.username, socketId : user.socketId }});
-        //     console.log(usersInChat);
-        // });
-        
-        socket.broadcast.emit('connectedUsers', users);
-        socket.emit('connectedUsers', users);
     }
 
     /**
@@ -184,7 +194,7 @@ const sendJoinedChatMessageBroadcaster = (session) => {
         'message',
         {
             messageType: messageType.CONNECTION.NOTME,
-            userName: session.username,
+            username: session.username,
             message: `joined the chat`
         }
     );
@@ -201,7 +211,7 @@ const sendLeavedChatMessageBroadcaster = (session) => {
         'message',
         {
             messageType: messageType.DISCONNECTED,
-            userName: session.username,
+            username: session.username,
             message: 'leaved the chat'
         }
     );

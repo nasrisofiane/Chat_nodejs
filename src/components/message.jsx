@@ -6,14 +6,14 @@ const Message = (props) => {
      * Add a simple messsage to chat area
      */
     const simpleMessage = (message) => {
-        return <p><strong>{message.userName}</strong> : {message.message}</p>;
+        return <p><strong>{message.username}</strong> : {message.message}</p>;
     }
 
     /**
      * When the current user connect, create a message that alert the user
      */
     const userConnectionMessage = (message) => {
-        return <p className="alert mt-2 mb-1 p-2 fade show alert-success rounded-0"><em>{message.message} {message.userName}</em></p>;
+        return <p className="alert mt-2 mb-1 p-2 fade show alert-success rounded-0"><em>{message.message} {message.username}</em></p>;
     }
 
     /**
@@ -23,7 +23,7 @@ const Message = (props) => {
 
         return (
             <div className="alert mt-2 mb-1 p-2  alert-dismissible fade show alert-info rounded-0" role="alert">
-                <p className="m-0"><em><strong>{message.userName}</strong> {message.message}</em></p>
+                <p className="m-0"><em><strong>{message.username}</strong> {message.message}</em></p>
                 <button type="button" className="close p-1" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -37,7 +37,7 @@ const Message = (props) => {
     const messageDisconnected = (message) => {
         return (
             <div className="alert mt-2 mb-1 p-2  alert-dismissible fade show alert-warning rounded-0" role="alert">
-                <p className="m-0"><em><strong>{message.userName}</strong> {message.message}</em></p>
+                <p className="m-0"><em><strong>{message.username}</strong> {message.message}</em></p>
                 <button type="button" className="close p-1" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

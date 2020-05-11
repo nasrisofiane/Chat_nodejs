@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import Login from './login';
-import Chat from './chat';
+import ChatManager from './chatManager';
 
 const App = (props) => {
     
@@ -10,6 +10,6 @@ const App = (props) => {
         setView(props.appState.view);
     },[]);
 
-    return view ? (view == 'Login' ? <Login errorMessage={props.appState.errorMessage}/> : <Chat/>) : null;
+    return view ? (view == 'Login' ? <Login errorMessage={props.appState.errorMessage}/> : <ChatManager/>) : null;
 }
 export default App;

@@ -68,15 +68,15 @@ export const logout = (req, res) =>{
  */
 export const login = (req, res) =>{
     //Allow only alphanumeric character and delete all other characters.
-    let userName =  req.body.username.replace(/[^A-Z0-9]/ig, "");
+    let username =  req.body.username.replace(/[^A-Z0-9]/ig, "");
 
-    if(!userName.length && !req.file){
+    if(!username.length && !req.file){
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.EMPTY_FIELDS, res);
     }
     else if(!req.file){
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_FILE, res);
     }
-    else if(!userName.length){
+    else if(!username.length){
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
     }
     else if(!req.session.username){
@@ -85,7 +85,7 @@ export const login = (req, res) =>{
         let querySettings = {
             limit : 0,
             searchByFields : {
-                username : userName
+                username : username
             }
         }
 
@@ -100,7 +100,7 @@ export const login = (req, res) =>{
             }
             else{
                 //Attach the username to his current session
-                req.session.username = userName;
+                req.session.username = username;
 
                 //Attach the correct path to the user's image
                 req.session.image = `${usersImagesPath}/${req.file.filename}`;
