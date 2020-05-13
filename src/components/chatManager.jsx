@@ -7,9 +7,9 @@ const ChatManager = (props) => {
 
     const [socket, setSocket] = useState();
     const [messagesReceived, setMessagesReceived] = useState([]);
-    const [privateMessagesReceived, setPrivateMessagesReceived] = useState([]);
+    const [privateMessagesReceived, setPrivateMessagesReceived] = useState({});
     const [usernameMessage, setUsernameMessage] = useState(null);
-    const [myInformations, setMyInformations] = useState(null);
+    const [myInformations, setMyInformations] = useState({});
     const [users, setUsers] = useState(null);
     const [talkTo, setTalkTo] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -29,7 +29,20 @@ const ChatManager = (props) => {
             // Event that retrieve the last messages once the server triggered the event.
             socket.on('lastMessages', ({ messages }) => setMessagesReceived(prevMessages => [...prevMessages, ...messages]));
 
-            socket.on('privateMessage', message => setPrivateMessagesReceived(prevMessages => [...prevMessages, { ...message }]));
+            socket.on('privateMessage', message => {
+                let prevMessages;
+
+                if(message.sendTo == myInformations.username){
+                    prevMessages = Array.isArray(privateMessagesReceived[message.username]);
+                    prevMessages ? privateMessagesReceived[message.username].push(message) : privateMessagesReceived[message.username]= [message];
+                }
+                else{
+                    prevMessages = Array.isArray(privateMessagesReceived[message.sendTo]);
+                    prevMessages ? privateMessagesReceived[message.sendTo].push(message) : privateMessagesReceived[message.sendTo] = [message];
+                }
+
+                setPrivateMessagesReceived(messages => {return {...messages}});
+            });
 
             socket.on('connectedUsers', users => setUsers(users));
 
@@ -38,9 +51,15 @@ const ChatManager = (props) => {
                 let prevScrollBarPosition = chatAreaDOM.current.scrollTop;
                 let prevMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
 
-                message.messageType != "me" ? setMessagesReceived(prevMessages => [...prevMessages, message]) : null;
-                message.messageType == "me" ? setUsernameMessage(`${message.message} ${message.myInformations.username}`) : null;
-                message.messageType == "me" ? setMyInformations(message.myInformations) : null;
+
+                if(message.messageType == "me"){
+                    myInformations.username = message.myInformations.username;
+                    myInformations.image = message.myInformations.image;
+                    setUsernameMessage(`${message.message} ${message.myInformations.username}`);
+                }
+                else{
+                    setMessagesReceived(prevMessages => [...prevMessages, message]);
+                }
 
                 chatScroller(prevScrollBarPosition, prevMaxScrollBarHeight);
             }
@@ -78,6 +97,7 @@ const ChatManager = (props) => {
     const windowDisplayer = () => {
         if (!errorMessage && !talkTo) {
             return <PublicChat
+                privateMessages={privateMessagesReceived}
                 messagesReceived={messagesReceived}
                 usernameMessage={usernameMessage}
                 users={users}
@@ -89,13 +109,9 @@ const ChatManager = (props) => {
         }
         else if (!errorMessage && talkTo) {
 
-            let privateMessages = privateMessagesReceived.filter(
-                ({ username, sendTo }) => talkTo.username == username || (talkTo.username == sendTo && talkTo.username != myInformations.username)
-            );
-
             return <PrivateChat
                 user={talkTo}
-                messages = {privateMessages}
+                messages = {privateMessagesReceived[talkTo.username]}
                 usernameMessage={usernameMessage}
                 myInformations = {myInformations}
                 goToPublicChat={goToPublicChat}

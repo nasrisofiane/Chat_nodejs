@@ -31,6 +31,7 @@ const startWebsocketsApp = (server, session, database) => {
             if (socketsPerUser(socket) === 0) {
                 getConnectedUsers(socket);
                 socket.handshake.session.socketId = null;
+                socket.handshake.session.cookie.maxAge = new Date(new Date().getTime() + 60 * 60000);
                 socket.handshake.session.save();
             }
         });
@@ -45,6 +46,7 @@ const startWebsocketsApp = (server, session, database) => {
         }
         else {
             socket.handshake.session.socketId = socket.id;
+            socket.handshake.session.cookie.maxAge = new Date(new Date().getTime() + 1000 * 60000);
         }
 
         //Save sessions variables
@@ -77,12 +79,16 @@ const startWebsocketsApp = (server, session, database) => {
             }
         );
 
+        //Send private message to a socket
         socket.on('sendPrivateMessage', datas => {
+            
             datas.username = username;
             datas.messageType = messageType.MESSAGE;
+            datas.seen = false;
+            
             let socketToSendDatas = usersInChat.filter( user => user.username == datas.sendTo)[0].socketId;
 
-            if(socketToSendDatas){
+            if(socketToSendDatas && username != datas.sendTo){
                 socket.to(socketToSendDatas).emit('privateMessage', datas);
                 socket.emit('privateMessage', datas);
             }
@@ -141,16 +147,13 @@ const startWebsocketsApp = (server, session, database) => {
         database.actionToDatabase(database.getFewDocuments, 'sessions', { limit: 0 }, (results) => {
 
             //Filter and map to retrieve only necessary datas from users.
-            usersInChat = results.filter(
-                user => user.socketId && user.usernamet).map(
-                    user => { return { username: user.username, image: user.image, socketId: user.socketId } }
-                );
+            usersInChat = results.filter(user => user.username)
+                .map(user => { return { username: user.username, image: user.image, socketId : user.socketId} });
 
-            //Map usersInChat to avoid socketID in client side
-            let users = usersInChat.map(user => { return { username: user.username, image: user.image } });
+            let usersInChatToClient = usersInChat.map( user => { return {username : user.username, image : user.image, connected : user.socketId ? true : false}});
 
-            socket.broadcast.emit('connectedUsers', users);
-            socket.emit('connectedUsers', users);
+            socket.broadcast.emit('connectedUsers', usersInChatToClient);
+            socket.emit('connectedUsers', usersInChatToClient);
         });
     }
 

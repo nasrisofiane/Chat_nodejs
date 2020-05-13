@@ -11,8 +11,8 @@ const PrivateChat = (props) => {
     const sendMessage = () => {
         let socket = props.socket;
         let datas = {
-            sendTo : props.user.username,
-            message : messageToSend
+            sendTo: props.user.username,
+            message: messageToSend
         };
         socket ? socket.emit('sendPrivateMessage', datas) : null;
 
@@ -22,7 +22,7 @@ const PrivateChat = (props) => {
 
     return (
         <div className="container h-100 bg-secondary">
-            
+
             <section className="row h-100 align-items-center justify-content-center" id="section-container">
 
                 <div className="container align-items-center justify-content-center">
@@ -31,8 +31,11 @@ const PrivateChat = (props) => {
                     </div>
 
                     <div className="row-fluid d-flex flex-row-reverse flex-nowrap bg-info m-0" id="users-list">
-                        <div className="align-items-center justify-content-center">
+                        <div className="position-relative align-items-center justify-content-center">
                             <img className="m-2 img-private-chat" src={props.user.image} />
+                            <div style={{bottom : 0}} className={`position-absolute col-12 m-0 p-1 ${props.user.connected ? 'text-success' : 'text-danger'} user-status-connected align-self-end d-flex justify-content-end`}>
+                                <div className="rounded-circle p-1 bg-dark d-flex justify-content-center"><i className="fas fa-plug"></i></div>
+                            </div>
                         </div>
                         <p className="mb-0 lead text-center d-flex align-items-center">{props.user.username}</p>
                         <p className="w-100 d-flex align-items-center justify-content-start m-0 pl-3"><i onClick={props.goToPublicChat} className="p-2 fas fa-arrow-left"></i></p>
@@ -41,7 +44,8 @@ const PrivateChat = (props) => {
                     <div id="chat-container" className="row-fluid bg-light p-3">
 
                         <div className="col-sm-12 lead" ref={props.chatAreaDOM} id="chat-area" >
-                            {props.messages.length ? props.messages.map((message, index) => <Message key={index} message={message} />) : null}
+                            {
+                            Array.isArray(props.messages) ? props.messages.map((message, index) => { message.seen = true; return <Message key={index} message={message} /> }) : null}
                         </div>
                         <div className="container">
                             <div className="row pl-2 pr-2">

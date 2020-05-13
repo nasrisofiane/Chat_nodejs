@@ -20,13 +20,13 @@ const customSessionsStore = sessionstore.createSessionStore({
 
 const session = expressSession({
     secret: "my-secret",
-        resave: false,
-        saveUninitialized: true,
-        store : customSessionsStore
+    resave: false,
+    saveUninitialized: true,
+    store: customSessionsStore
 });
 
 startWebsocketsApp(server, session, database);
-server.listen(8080);    
+server.listen(8080);
 
 //Express middlewares
 app.use(session);
@@ -40,7 +40,7 @@ app.use(express.static('public'));
 app.use("/css", express.static(__dirname + '/views/assets/css'));
 app.use("/js", express.static(__dirname + '/views/assets/js'));
 
-export {server, session, database};
+export { server, session, database };
 
 
 

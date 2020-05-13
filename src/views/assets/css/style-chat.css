@@ -20,3 +20,7 @@ html{
 .img-private-chat{
     max-width: 55px;
 }
+
+.user-status-connected div{
+    height: 25px;
+}
