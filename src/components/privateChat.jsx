@@ -24,6 +24,10 @@ const PrivateChat = (props) => {
         return () => messageSeen();
     }, []);
 
+    /**
+     * Trigger socket event to the server.
+     * will tell the server that the user have seen all the private messages from this conversation.
+     */
     const messageSeen = () =>{
         props.socket.emit('messagesSeen', props.conversation._id);
     }
