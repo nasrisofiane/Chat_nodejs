@@ -1,76 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
 import PublicChat from './publicChat';
 import PrivateChat from './privateChat';
+import SocketManager from './socketManager';
+let yo = { title : "haah"}
 
 const ChatManager = (props) => {
 
-    const [socket, setSocket] = useState();
     const [messagesReceived, setMessagesReceived] = useState([]);
-    const [privateMessagesReceived, setPrivateMessagesReceived] = useState({});
+    const [privateConversations, setPrivateConversations] = useState({});
     const [usernameMessage, setUsernameMessage] = useState(null);
     const [myInformations, setMyInformations] = useState({});
-    const [users, setUsers] = useState(null);
+    const [users, setUsers] = useState([]);
     const [talkTo, setTalkTo] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
     const [chatAreaDOM, setChatAreaDOM] = useState(React.createRef());
 
-    useEffect(() => {
-        const initializeSocket = io('http://localhost:8080/');
-        initializeSocket.on('connect', () => initializeSocketEvents(initializeSocket));
-        setSocket(initializeSocket);
-    }, []);
-
-    const initializeSocketEvents = (socket) => {
-        if (socket) {
-
-            socket.on('alreadyConnected', message => setErrorMessage(message));
-
-            // Event that retrieve the last messages once the server triggered the event.
-            socket.on('lastMessages', ({ messages }) => setMessagesReceived(prevMessages => [...prevMessages, ...messages]));
-
-            socket.on('privateMessage', message => {
-                let prevMessages;
-
-                if(message.sendTo == myInformations.username){
-                    prevMessages = Array.isArray(privateMessagesReceived[message.username]);
-                    prevMessages ? privateMessagesReceived[message.username].push(message) : privateMessagesReceived[message.username]= [message];
-                }
-                else{
-                    prevMessages = Array.isArray(privateMessagesReceived[message.sendTo]);
-                    prevMessages ? privateMessagesReceived[message.sendTo].push(message) : privateMessagesReceived[message.sendTo] = [message];
-                }
-
-                setPrivateMessagesReceived(messages => {return {...messages}});
-            });
-
-            socket.on('connectedUsers', users => setUsers(users));
-
-            //Event that retrieve new messages once the server triggered the event. 
-            socket.on('message', message => {
-                let prevScrollBarPosition = chatAreaDOM.current.scrollTop;
-                let prevMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
-
-
-                if(message.messageType == "me"){
-                    myInformations.username = message.myInformations.username;
-                    myInformations.image = message.myInformations.image;
-                    setUsernameMessage(`${message.message} ${message.myInformations.username}`);
-                }
-                else{
-                    setMessagesReceived(prevMessages => [...prevMessages, message]);
-                }
-
-                chatScroller(prevScrollBarPosition, prevMaxScrollBarHeight);
-            }
-            );
+    /**
+     * Prepare conversation, if the opened conversation is new, add an empty object to the conversations
+     * @param {*} user 
+     */
+    const prepareConversation = (user) => {
+        setTalkTo(user);
+        if (!privateConversations[user.username]) {
+            setPrivateConversations(prevConversations => { return { ...prevConversations, [user.username]: {} } });
         }
     }
 
-    const getUser = (user) => {
-        setTalkTo(user);
-    }
-
+    /**
+     * set Talkto to null to change the view.
+     */
     const goToPublicChat = () => {
         setTalkTo(null);
     }
@@ -82,7 +40,13 @@ const ChatManager = (props) => {
         return <div className="row h-100 align-items-center justify-content-center display-4">{errorMessage}</div>;
     }
 
+    /**
+     * If the chatArea bar scroll is fully down, the next message will be automatically scrolled to the new max bottom.
+     * @param {*} prevScrollBarPosition 
+     * @param {*} prevMaxScrollBarHeight 
+     */
     const chatScroller = (prevScrollBarPosition, prevMaxScrollBarHeight) => {
+        
         let newMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
 
         if (prevScrollBarPosition == prevMaxScrollBarHeight) {
@@ -94,28 +58,32 @@ const ChatManager = (props) => {
         }
     }
 
+    /**
+     * Return differents view depending on conditions.
+     */
     const windowDisplayer = () => {
         if (!errorMessage && !talkTo) {
             return <PublicChat
-                privateMessages={privateMessagesReceived}
+                privateConversations={privateConversations}
                 messagesReceived={messagesReceived}
                 usernameMessage={usernameMessage}
                 users={users}
-                myInformations = {myInformations}
+                myInformations={myInformations}
                 chatAreaDOM={chatAreaDOM}
-                socket={socket}
-                getUser={getUser}
+                socket={props.socket}
+                prepareConversation={prepareConversation}
             />;
         }
         else if (!errorMessage && talkTo) {
-
+            
             return <PrivateChat
                 user={talkTo}
-                messages = {privateMessagesReceived[talkTo.username]}
+                conversation={privateConversations[talkTo.username]}
                 usernameMessage={usernameMessage}
-                myInformations = {myInformations}
+                myInformations={myInformations}
+                chatAreaDOM={chatAreaDOM}
                 goToPublicChat={goToPublicChat}
-                socket={socket}
+                socket={props.socket}
             />
         }
         else {
@@ -123,7 +91,21 @@ const ChatManager = (props) => {
         }
     }
 
-    return windowDisplayer();
+    return (<div className="container h-100 bg-secondary">
+        <SocketManager
+            messagesReceived={[messagesReceived, setMessagesReceived]}
+            privateConversations={[privateConversations, setPrivateConversations]}
+            usernameMessage={[usernameMessage, setUsernameMessage]}
+            myInformations={[myInformations, setMyInformations]}
+            users={[users, setUsers]}
+            errorMessage={[errorMessage, setErrorMessage]}
+            chatScroller={chatScroller}
+            socket={props.socket}
+            chatAreaDOM={chatAreaDOM}
+        />
+
+        {windowDisplayer()}
+    </div>);
 
 
 

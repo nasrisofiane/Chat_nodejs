@@ -35,9 +35,13 @@ const UsersList = (props) => {
         );
     }
 
+    /**
+     * Count and return the number of pending messages.
+     * @param {*} userInformations 
+     */
     const getPendingMessages = (userInformations) => {
-        if (Array.isArray(props.privateMessages[userInformations.username])) {
-            userInformations.pendingMessages = props.privateMessages[userInformations.username].filter(message => message.seen == false).length;
+        if (props.privateConversations[userInformations.username] && Array.isArray(props.privateConversations[userInformations.username].messages)) {
+            userInformations.pendingMessages = props.privateConversations[userInformations.username].messages.filter( ({ seen }) => seen[props.myInformations.username] == false).length;
         }
         else {
             userInformations.pendingMessages = 0;
@@ -52,7 +56,7 @@ const UsersList = (props) => {
             <div>
                 <button ref={openModalButton} type="button" className="d-none btn btn-primary" data-toggle="modal" data-target="#errorModal">Open modal</button>
 
-                <div className="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalUsersList" aria-hidden="true">
+                <div className="modal fade" id="errorModal" tabIndex="-1" role="dialog" aria-labelledby="errorModalUsersList" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="rounded-0 modal-content">
                             <div className="modal-header">
@@ -82,7 +86,7 @@ const UsersList = (props) => {
             openModalButton.current.click();
         }
         else {
-            props.getUser(userInformations);
+            props.prepareConversation(userInformations);
         }
     }
 

@@ -26,6 +26,9 @@ const Login = (props) => {
         setImageSelected(e.target.result);
     }
 
+    /**
+     * Return a window with an error message
+     */
     const createErrorMessage = () =>{
         return (
             <div className="alert mt-2 mb-1 p-2 alert-dismissible fade show alert-danger" role="alert">

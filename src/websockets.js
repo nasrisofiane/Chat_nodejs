@@ -66,14 +66,35 @@ const startWebsocketsApp = (server, session, database) => {
         }
         );
 
+        getConnectedUsers(socket);
+
+        //last private message search criteria
+        let searchLastConversations = { users: { $in: [username] } }
+
+        //Get lasts private messages
+        database.actionToDatabase(database.getFewDocuments, 'privateConversations', { limit: 4, searchByFields: searchLastConversations }, (results) => {
+            results.map(conversation => {
+                conversation.users = conversation.users.filter(user => user != username);
+            });
+
+            if (results.length) {
+                //Send a message to the user session to retrieve lasts messages from the chat.
+                socket.emit(
+                    'lastConversations',
+                    results
+                );
+            }
+        }
+        );
+
         //Send a welcome message to the user that succesfully connected. 
         socket.emit(
             'message',
             {
                 messageType: messageType.CONNECTION.ME,
-                myInformations : {
-                    username : username,
-                    image : socket.handshake.session.image
+                myInformations: {
+                    username: username,
+                    image: socket.handshake.session.image
                 },
                 message: `You're connected as`
             }
@@ -81,20 +102,70 @@ const startWebsocketsApp = (server, session, database) => {
 
         //Send private message to a socket
         socket.on('sendPrivateMessage', datas => {
-            
+
             datas.username = username;
             datas.messageType = messageType.MESSAGE;
-            datas.seen = false;
-            
-            let socketToSendDatas = usersInChat.filter( user => user.username == datas.sendTo)[0].socketId;
+            datas.seen = { [datas.username]: false, [datas.sendTo]: false };
 
-            if(socketToSendDatas && username != datas.sendTo){
-                socket.to(socketToSendDatas).emit('privateMessage', datas);
-                socket.emit('privateMessage', datas);
+            let socketToSendDatas = usersInChat.filter(user => user.username == datas.sendTo)[0].socketId;
+
+            if (socketToSendDatas && username != datas.sendTo) {
+
+                let search = { users: { $in: [[username, datas.sendTo], [username, datas.sendTo]] } }
+
+                //Retrieve privateMessages that concern both user's and add to the conversation database object a message.
+                database.actionToDatabase(database.getFewDocuments, 'privateConversations', { limit: 0, searchByFields: search }, (results) => {
+                    addMessageToConversation(
+                        datas,
+                        results,
+                        (isNewConversation, newConversation) => {
+
+                            if (isNewConversation) {
+                                socket.to(socketToSendDatas).emit('newConversation', newConversation);
+                                socket.emit('newConversation', newConversation);
+                            }
+                            else {
+                                socket.to(socketToSendDatas).emit('privateMessage', datas);
+                                socket.emit('privateMessage', datas);
+                            }
+                        }
+                    );
+                });
             }
         });
 
-        getConnectedUsers(socket);
+        socket.on('messagesSeen', (conversationId) => {
+
+            database.actionToDatabase(database.getFewDocuments, 'privateConversations', { limit: 0, searchByFields: { _id: conversationId } }, (results) => {
+
+                if (results.length && results[0].users && results[0].users.includes(username)) {
+                    let messages = results[0].messages;
+                    let users = results[0].users;
+                    messages.map((message) => message.seen[username] = true);
+
+
+                    database.actionToDatabase(
+                        database.insertSingleDocument,
+                        'privateConversations',
+                        {
+                            _id: conversationId,
+                            users: users,
+                            messages: messages
+                        },
+                        (insertResults) => {
+
+                            if (insertResults.result.n == insertResults.result.ok) {
+                                socket.emit('messagesSeen', users.filter(user => user != username));
+                            }
+                        }
+                    );
+
+
+                }
+
+            });
+
+        })
 
         //Perform action when the client triggered the "message" event
         socket.on('message', message => {
@@ -142,18 +213,20 @@ const startWebsocketsApp = (server, session, database) => {
     /**
      * Retrieve all connected users
      */
-    const getConnectedUsers = socket => {
+    const getConnectedUsers = (socket, callback) => {
 
         database.actionToDatabase(database.getFewDocuments, 'sessions', { limit: 0 }, (results) => {
 
             //Filter and map to retrieve only necessary datas from users.
             usersInChat = results.filter(user => user.username)
-                .map(user => { return { username: user.username, image: user.image, socketId : user.socketId} });
+                .map(user => { return { username: user.username, image: user.image, socketId: user.socketId } });
 
-            let usersInChatToClient = usersInChat.map( user => { return {username : user.username, image : user.image, connected : user.socketId ? true : false}});
+            let usersInChatToClient = usersInChat.map(user => { return { username: user.username, image: user.image, connected: user.socketId ? true : false } });
 
             socket.broadcast.emit('connectedUsers', usersInChatToClient);
             socket.emit('connectedUsers', usersInChatToClient);
+
+            callback ? callback(usersInChatToClient) : null;
         });
     }
 
@@ -173,16 +246,49 @@ const startWebsocketsApp = (server, session, database) => {
     }
 
     /**
-     * Return true or false if the user is able to send messages to broadcaster.
+     * Function that add a message to the database in the conversation
+     * @param {*} receiver receiver username
+     * @param {*} datas 
+     * @param {*} results 
+     * @param {*} callback 
      */
-    // const canNotify = (socket) => {
-    //     if (new Date(socket.handshake.session.lastConnection.getTime() + 1 * 60000) < new Date()) {
-    //         return true;
-    //     }
+    const addMessageToConversation = (datas, results, callback) => {
+        let users = [datas.username, datas.sendTo];
 
-    //     return false;
-    // }
+        if (results.length == 1) {
+            let conversationsDatas = results[0];
 
+            database.actionToDatabase(
+                database.insertSingleDocument,
+                'privateConversations',
+                {
+                    _id: conversationsDatas._id,
+                    users: users,
+                    messages: [...conversationsDatas.messages, datas]
+                },
+                (queryResults) => {
+                    if (queryResults.result.n === queryResults.result.ok) {
+                        callback(false);
+                    }
+                }
+            );
+        } else {
+            database.actionToDatabase(
+                database.insertSingleDocument,
+                'privateConversations',
+                {
+                    users: users,
+                    messages: [datas]
+                },
+                (queryResults) => {
+                    if (queryResults.result.n === queryResults.result.ok) {
+
+                        callback(true, queryResults.ops[0]);
+                    }
+                }
+            );
+        }
+    }
 
 }
 

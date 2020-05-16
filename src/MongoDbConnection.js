@@ -5,13 +5,15 @@
 class MongoDbConnection{
 
   constructor(){
-    this.MongoClient = require('mongodb').MongoClient;
+    this.mongoDb = require('mongodb');
+    this.ObjectId = this.mongoDb.ObjectID;
+    this.MongoClient = this.mongoDb.MongoClient;
     this.assert = require('assert');
     this.url = 'mongodb://localhost:27017';
     this.databaseName = 'chat';
 
     //Every action to database will check if a collection is well writed by checking in this array with an assert function.
-    this.collectionsName = { messages : 'messages', sessions : 'sessions'};
+    this.collectionsName = { messages : 'messages', sessions : 'sessions', privateConversations : 'privateConversations'};
   }
 
   /**
@@ -73,15 +75,19 @@ class MongoDbConnection{
     this.assert.equal(collectionName, this.collectionsName[collectionName]);
     let collection = db.collection(collectionName);
 
-    collection.insertOne(datas, (err, result) =>{
+    
+    if(typeof(datas) != 'undefined' && datas._id){
+      datas._id = this.ObjectId(datas._id);
+    }
+
+    collection.save(datas, (err, result) =>{
       this.assert.equal(err, null);
       this.assert.equal(1, result.result.n);
-      this.assert.equal(1, result.ops.length);
 
       callback(result);
     });
   }
-  
+
   /**
    * Retrieve few documents in a collection
    * @db a database
@@ -93,6 +99,10 @@ class MongoDbConnection{
 
     this.assert.equal(collectionName, this.collectionsName[collectionName]);
     let collection = db.collection(collectionName);
+
+    if(typeof(datas.searchByFields) != 'undefined' && datas.searchByFields._id){
+      datas.searchByFields._id = this.ObjectId(datas.searchByFields._id);
+    }
 
     collection.find(datas.searchByFields).sort({_id: -1}).limit(datas.limit).toArray((err, result) => {
       this.assert.equal(err, null);

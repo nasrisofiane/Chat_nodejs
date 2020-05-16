@@ -9,16 +9,25 @@ const PrivateChat = (props) => {
     * Send value from the text input to the server event "message"
     */
     const sendMessage = () => {
-        let socket = props.socket;
         let datas = {
             sendTo: props.user.username,
-            message: messageToSend
+            message: messageToSend,
         };
-        socket ? socket.emit('sendPrivateMessage', datas) : null;
+        props.socket.emit('sendPrivateMessage', datas);
 
         // Clean the value once the message has been sent to the server.
         setMessageToSend("");
     }
+
+    useEffect(()=>{
+        messageSeen();
+        return () => messageSeen();
+    }, []);
+
+    const messageSeen = () =>{
+        props.socket.emit('messagesSeen', props.conversation._id);
+    }
+
 
     return (
         <div className="container h-100 bg-secondary">
@@ -44,8 +53,7 @@ const PrivateChat = (props) => {
                     <div id="chat-container" className="row-fluid bg-light p-3">
 
                         <div className="col-sm-12 lead" ref={props.chatAreaDOM} id="chat-area" >
-                            {
-                            Array.isArray(props.messages) ? props.messages.map((message, index) => { message.seen = true; return <Message key={index} message={message} /> }) : null}
+                           {Array.isArray(props.conversation.messages) ? props.conversation.messages.map((message, index) => {return <Message key={index} message={message} /> }) : null}
                         </div>
                         <div className="container">
                             <div className="row pl-2 pr-2">
