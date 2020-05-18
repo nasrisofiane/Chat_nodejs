@@ -16,7 +16,7 @@ const customFilter = (req, file, cb) => {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, `${__dirname}/../../public${usersImagesPath}`)
+      cb(null, `${path.join(__dirname, '../../..')}/public${usersImagesPath}`)
     },
     filename: (req, file, cb) => {
         let fileExt = path.extname(file.originalname)

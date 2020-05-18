@@ -111,7 +111,7 @@ const startWebsocketsApp = (server, session, database) => {
 
             if (socketToSendDatas && username != datas.sendTo) {
 
-                let search = { users: { $in: [[username, datas.sendTo], [username, datas.sendTo]] } }
+                let search = { users: { $in: [[username, datas.sendTo], [datas.sendTo, username]] } }
 
                 //Retrieve privateMessages that concern both user's and add to the conversation database object a message.
                 database.actionToDatabase(database.getFewDocuments, 'privateConversations', { limit: 0, searchByFields: search }, (results) => {

@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./routes";
+import path from 'path';
 import http from 'http';
 import MongoDbConnection from './MongoDbConnection';
 import sessionstore from 'sessionstore';
@@ -12,11 +13,10 @@ const database = new MongoDbConnection();
 
 const customSessionsStore = sessionstore.createSessionStore({
     type: 'mongodb',
-    host: 'localhost',
-    port: 27017,
-    dbName: 'chat',
-    collectionName: 'sessions',
+    url : '***',
+    collectionName: 'sessions'
 });
+
 
 const session = expressSession({
     secret: "my-secret",
@@ -33,7 +33,7 @@ app.use(session);
 app.use(router);
 
 //views engine
-app.set('views', __dirname + '/views');
+app.set('views', `${path.join(__dirname, '../')}/views`);
 
 //Retrieve needed ressources from customs paths.
 app.use(express.static('public'));

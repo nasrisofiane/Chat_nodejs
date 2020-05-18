@@ -1,7 +1,7 @@
 import { usersImagesPath } from './utils/multerConfig.js';
 import { database } from './server';
 import { sendJoinedChatMessageBroadcaster, sendLeavedChatMessageBroadcaster } from './websockets';
-import App from "./components/app";
+import App from "../components/app";
 import AppState from "./AppState";
 import React from "react";
 import ReactDOMServer from "react-dom/server";

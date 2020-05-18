@@ -12,6 +12,7 @@ const PrivateChat = (props) => {
         let datas = {
             sendTo: props.user.username,
             message: messageToSend,
+            conversationId : props.conversation._id
         };
         props.socket.emit('sendPrivateMessage', datas);
 

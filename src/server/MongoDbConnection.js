@@ -9,8 +9,8 @@ class MongoDbConnection{
     this.ObjectId = this.mongoDb.ObjectID;
     this.MongoClient = this.mongoDb.MongoClient;
     this.assert = require('assert');
-    this.url = 'mongodb://localhost:27017';
-    this.databaseName = 'chat';
+    this.url = '***';
+    this.databaseName = '***';
 
     //Every action to database will check if a collection is well writed by checking in this array with an assert function.
     this.collectionsName = { messages : 'messages', sessions : 'sessions', privateConversations : 'privateConversations'};
