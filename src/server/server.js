@@ -17,7 +17,6 @@ const customSessionsStore = sessionstore.createSessionStore({
     collectionName: 'sessions'
 });
 
-
 const session = expressSession({
     secret: "my-secret",
     resave: false,
