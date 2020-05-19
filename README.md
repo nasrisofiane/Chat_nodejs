@@ -20,4 +20,4 @@ The goal of this project is to make the first step into the nodejs world, this i
 	- MongoDB
 
 # Test the project !
-Project will deployed soon on a cloud server.
+Project will be deployed soon on a cloud server.
