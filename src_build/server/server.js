@@ -30,6 +30,7 @@ const server = _http.default.createServer(app);
 exports.server = server;
 const database = new _MongoDbConnection.default();
 exports.database = database;
+const port = process.env.PORT || 3000;
 
 const customSessionsStore = _sessionstore.default.createSessionStore({
   type: 'mongodb',
@@ -45,7 +46,8 @@ const session = (0, _expressSession.default)({
 });
 exports.session = session;
 (0, _websockets.default)(server, session, database);
-server.listen(8080); //Express middlewares
+server.listen(port);
+console.log(`App listening on ${port}`); //Express middlewares
 
 app.use(session);
 app.use(_routes.default); //views engine

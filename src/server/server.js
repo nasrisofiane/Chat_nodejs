@@ -10,6 +10,7 @@ import startWebsocketsApp from './websockets';
 const app = express();
 const server = http.createServer(app);
 const database = new MongoDbConnection();
+const port = process.env.PORT || 3000;
 
 const customSessionsStore = sessionstore.createSessionStore({
     type: 'mongodb',
@@ -25,7 +26,9 @@ const session = expressSession({
 });
 
 startWebsocketsApp(server, session, database);
-server.listen(8080);
+server.listen(port);
+
+console.log(`App listening on ${port}`);
 
 //Express middlewares
 app.use(session);
