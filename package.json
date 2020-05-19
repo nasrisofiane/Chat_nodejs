@@ -25,13 +25,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "webpack --config ./webpack.config.js",
     "build:server" : "babel -d ./src_build ./src",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "nodemon --exec babel-node src/server/server.js",
     "run:prod" : "node src_build/server/server.js",
-    "build:prod": "webpack --config ./webpack.config.js",
     "webpack": "webpack -wd"
   },
   "eslintConfig": {
