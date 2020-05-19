@@ -24,7 +24,7 @@
     "socket.io-client": "^2.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node ./src_build/server/server.js",
     "build": "webpack --config ./webpack.config.js",
     "build:server" : "babel -d ./src_build ./src",
     "test": "react-scripts test",
