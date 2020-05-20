@@ -3,6 +3,8 @@ import Login from './login';
 import io from 'socket.io-client';
 import ChatManager from './chatManager';
 
+
+
 const App = (props) => {
 
     const [socket, setSocket] = useState(null);
@@ -10,9 +12,10 @@ const App = (props) => {
     const [view, setView] = useState(null);
 
     useEffect(() => {
+        let url = window.location.href;
         setView(props.appState.view);
         if (props.appState.view != 'Login') {
-            setSocket(io('http://localhost:8080/'));
+            setSocket(io(url));
         }
     }, []);
 

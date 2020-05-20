@@ -70,7 +70,7 @@ export const logout = (req, res) => {
 export const login = (req, res) => {
     //Allow only alphanumeric character and delete all other characters.
     let username = req.body.username.replace(/[^A-Z0-9]/ig, "");
-
+    
     if (!username.length && !req.file) {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.EMPTY_FIELDS, res);
     }
@@ -81,7 +81,7 @@ export const login = (req, res) => {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
     }
     else if (!req.session.username) {
-
+        
         if (username.length <= 8) {
             //Settings for the database query
             let querySettings = {

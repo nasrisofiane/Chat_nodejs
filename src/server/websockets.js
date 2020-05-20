@@ -23,7 +23,7 @@ const startWebsocketsApp = (server, session, database) => {
      * Event that will initialize applications events once a session connected to the server.
      */
     webSockets.sockets.on('connection', socket => {
-
+        
         //Store the session username in a variable
         let username = socket.handshake.session.username ? socket.handshake.session.username : null;
 
@@ -111,6 +111,9 @@ const startWebsocketsApp = (server, session, database) => {
 
             if (socketToSendDatas && username != datas.sendTo) {
 
+                socket.to(socketToSendDatas).emit('privateMessage', datas);
+                socket.emit('privateMessage', datas);
+                
                 let search = { users: { $in: [[username, datas.sendTo], [datas.sendTo, username]] } }
 
                 //Retrieve privateMessages that concern both user's and add to the conversation database object a message.
@@ -123,10 +126,6 @@ const startWebsocketsApp = (server, session, database) => {
                             if (isNewConversation) {
                                 socket.to(socketToSendDatas).emit('newConversation', newConversation);
                                 socket.emit('newConversation', newConversation);
-                            }
-                            else {
-                                socket.to(socketToSendDatas).emit('privateMessage', datas);
-                                socket.emit('privateMessage', datas);
                             }
                         }
                     );
@@ -216,10 +215,9 @@ const startWebsocketsApp = (server, session, database) => {
     const getConnectedUsers = (socket, callback) => {
 
         database.actionToDatabase(database.getFewDocuments, 'sessions', { limit: 0 }, (results) => {
-
             //Filter and map to retrieve only necessary datas from users.
-            usersInChat = results.filter(user => user.username)
-                .map(user => { return { username: user.username, image: user.image, socketId: user.socketId } });
+            usersInChat = results.filter(user => user.session.username)
+                .map(({ session }) => { return { username: session.username, image: session.image, socketId: session.socketId } });
 
             let usersInChatToClient = usersInChat.map(user => { return { username: user.username, image: user.image, connected: user.socketId ? true : false } });
 

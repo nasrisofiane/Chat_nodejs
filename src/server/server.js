@@ -3,26 +3,24 @@ import router from "./routes";
 import path from 'path';
 import http from 'http';
 import MongoDbConnection from './MongoDbConnection';
-import sessionstore from 'sessionstore';
 import expressSession from 'express-session';
 import startWebsocketsApp from './websockets';
 
+const MongoStore = require('connect-mongo')(expressSession);
 const app = express();
 const server = http.createServer(app);
 const database = new MongoDbConnection();
-const port = process.env.PORT || 3000;
-
-const customSessionsStore = sessionstore.createSessionStore({
-    type: 'mongodb',
-    url : '***',
-    collectionName: 'sessions'
-});
+const port = process.env.PORT || 8095;
 
 const session = expressSession({
     secret: "my-secret",
     resave: false,
     saveUninitialized: true,
-    store: customSessionsStore
+    store: new MongoStore({
+        url : database.url,
+        collection : database.collectionsName.sessions,
+        stringify : false
+    })
 });
 
 startWebsocketsApp(server, session, database);
