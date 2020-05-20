@@ -39,9 +39,6 @@ const storage = _multer.default.diskStorage({
 
 const upload = (0, _multer.default)({
   storage: storage,
-  limits: {
-    fileSize: 100 * 1024
-  },
   fileFilter: customFilter
 });
 exports.upload = upload;

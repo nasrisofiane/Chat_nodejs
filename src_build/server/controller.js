@@ -11,6 +11,8 @@ var _server = require("./server");
 
 var _websockets = require("./websockets");
 
+var _errorMessages = _interopRequireDefault(require("./errorMessages"));
+
 var _app = _interopRequireDefault(require("../components/app"));
 
 var _AppState = _interopRequireDefault(require("./AppState"));
@@ -21,20 +23,9 @@ var _server2 = _interopRequireDefault(require("react-dom/server"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const errorMessagesEnum = {
-  LOGIN: {
-    NO_USERNAME: "Error with your username, username only takes alphanumeric characters",
-    USERNAME_ALREADY_EXISTS: "Username already exists",
-    USERNAME_LENGTH: "Username too long, username length should be 8 or less",
-    NO_FILE: "The image field has not been detected, pick an image",
-    NOT_IMAGE: "The file sent is not recognized as an image, please ensure to select a PNG or JPEG",
-    EMPTY_FIELDS: "You cannot connect without an username and an image"
-  }
-};
 /**
  * Render a view file
  */
-
 const chat = (req, res) => {
   let reactApp = _server2.default.renderToString( /*#__PURE__*/_react.default.createElement(_app.default, null)); //If the session doesn't have an appState, creates one.
 
@@ -85,12 +76,14 @@ const login = (req, res) => {
   let username = req.body.username.replace(/[^A-Z0-9]/ig, "");
 
   if (!username.length && !req.file) {
-    setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.EMPTY_FIELDS, res);
+    setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.EMPTY_FIELDS, res);
   } else if (!req.file) {
-    setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_FILE, res);
+    setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.NO_FILE, res);
   } else if (!username.length) {
-    setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
+    setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.NO_USERNAME, res);
   } else if (!req.session.username) {
+    if (req.file.size > 102000) return setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.FILE_SIZE, res);
+
     if (username.length <= 8) {
       //Settings for the database query
       let querySettings = {
@@ -105,7 +98,7 @@ const login = (req, res) => {
         let usernameAlreadyExists = results.length ? true : false;
 
         if (usernameAlreadyExists) {
-          setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.USERNAME_ALREADY_EXISTS, res);
+          setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.USERNAME_ALREADY_EXISTS, res);
         } else {
           //Attach the username to his current session
           req.session.username = username; //Attach the correct path to the user's image
@@ -117,7 +110,7 @@ const login = (req, res) => {
         }
       });
     } else {
-      setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.USERNAME_LENGTH, res);
+      setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.USERNAME_LENGTH, res);
     }
   }
 };

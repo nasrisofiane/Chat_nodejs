@@ -127,6 +127,7 @@ const ChatManager = props => {
     errorMessage: [errorMessage, setErrorMessage],
     chatScroller: chatScroller,
     socket: props.socket,
+    talkTo: [talkTo, setTalkTo],
     chatAreaDOM: chatAreaDOM
   }), windowDisplayer());
 };

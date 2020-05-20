@@ -23,7 +23,7 @@ const startWebsocketsApp = (server, session, database) => {
      * Event that will initialize applications events once a session connected to the server.
      */
     webSockets.sockets.on('connection', socket => {
-        
+
         //Store the session username in a variable
         let username = socket.handshake.session.username ? socket.handshake.session.username : null;
 
@@ -105,15 +105,17 @@ const startWebsocketsApp = (server, session, database) => {
 
             datas.username = username;
             datas.messageType = messageType.MESSAGE;
-            datas.seen = { [datas.username]: false, [datas.sendTo]: false };
+            datas.seen = { [datas.username]: true, [datas.sendTo]: false };
 
-            let socketToSendDatas = usersInChat.filter(user => user.username == datas.sendTo)[0].socketId;
+            let userToSendDatas = usersInChat.filter(user => user.username == datas.sendTo)[0];
 
-            if (socketToSendDatas && username != datas.sendTo) {
+            if (userToSendDatas.socketId && username != datas.sendTo) {
+                socket.to(userToSendDatas.socketId).emit('privateMessage', datas);
+            }
 
-                socket.to(socketToSendDatas).emit('privateMessage', datas);
+            if(userToSendDatas && username != datas.sendTo){
                 socket.emit('privateMessage', datas);
-                
+
                 let search = { users: { $in: [[username, datas.sendTo], [datas.sendTo, username]] } }
 
                 //Retrieve privateMessages that concern both user's and add to the conversation database object a message.
@@ -122,15 +124,16 @@ const startWebsocketsApp = (server, session, database) => {
                         datas,
                         results,
                         (isNewConversation, newConversation) => {
-
+    
                             if (isNewConversation) {
-                                socket.to(socketToSendDatas).emit('newConversation', newConversation);
+                                userToSendDatas.socketId ? socket.to(userToSendDatas.socketId).emit('newConversation', newConversation) : null;
                                 socket.emit('newConversation', newConversation);
                             }
                         }
                     );
                 });
             }
+
         });
 
         socket.on('messagesSeen', (conversationId) => {

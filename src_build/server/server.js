@@ -30,7 +30,7 @@ const server = _http.default.createServer(app);
 exports.server = server;
 const database = new _MongoDbConnection.default();
 exports.database = database;
-const port = process.env.PORT || 8095;
+const port = process.env.PORT || 3000;
 const session = (0, _expressSession.default)({
   secret: "my-secret",
   resave: false,

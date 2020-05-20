@@ -103,13 +103,16 @@ const startWebsocketsApp = (server, session, database) => {
       datas.username = username;
       datas.messageType = messageType.MESSAGE;
       datas.seen = {
-        [datas.username]: false,
+        [datas.username]: true,
         [datas.sendTo]: false
       };
-      let socketToSendDatas = usersInChat.filter(user => user.username == datas.sendTo)[0].socketId;
+      let userToSendDatas = usersInChat.filter(user => user.username == datas.sendTo)[0];
 
-      if (socketToSendDatas && username != datas.sendTo) {
-        socket.to(socketToSendDatas).emit('privateMessage', datas);
+      if (userToSendDatas.socketId && username != datas.sendTo) {
+        socket.to(userToSendDatas.socketId).emit('privateMessage', datas);
+      }
+
+      if (userToSendDatas && username != datas.sendTo) {
         socket.emit('privateMessage', datas);
         let search = {
           users: {
@@ -123,7 +126,7 @@ const startWebsocketsApp = (server, session, database) => {
         }, results => {
           addMessageToConversation(datas, results, (isNewConversation, newConversation) => {
             if (isNewConversation) {
-              socket.to(socketToSendDatas).emit('newConversation', newConversation);
+              userToSendDatas.socketId ? socket.to(userToSendDatas.socketId).emit('newConversation', newConversation) : null;
               socket.emit('newConversation', newConversation);
             }
           });

@@ -1,21 +1,11 @@
 import { usersImagesPath } from './utils/multerConfig.js';
 import { database } from './server';
 import { sendJoinedChatMessageBroadcaster, sendLeavedChatMessageBroadcaster } from './websockets';
+import errorMessagesEnum from './errorMessages';
 import App from "../components/app";
 import AppState from "./AppState";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-
-const errorMessagesEnum = {
-    LOGIN: {
-        NO_USERNAME: "Error with your username, username only takes alphanumeric characters",
-        USERNAME_ALREADY_EXISTS: "Username already exists",
-        USERNAME_LENGTH: "Username too long, username length should be 8 or less",
-        NO_FILE: "The image field has not been detected, pick an image",
-        NOT_IMAGE: "The file sent is not recognized as an image, please ensure to select a PNG or JPEG",
-        EMPTY_FIELDS: "You cannot connect without an username and an image"
-    }
-};
 
 /**
  * Render a view file
@@ -81,7 +71,8 @@ export const login = (req, res) => {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
     }
     else if (!req.session.username) {
-        
+        if(req.file.size > 102000) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
+
         if (username.length <= 8) {
             //Settings for the database query
             let querySettings = {

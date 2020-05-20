@@ -13,6 +13,7 @@ const App = (props) => {
 
     useEffect(() => {
         let url = window.location.href;
+        
         setView(props.appState.view);
         if (props.appState.view != 'Login') {
             setSocket(io(url));
