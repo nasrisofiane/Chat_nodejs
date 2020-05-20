@@ -109,6 +109,8 @@ const startWebsocketsApp = (server, session, database) => {
       let socketToSendDatas = usersInChat.filter(user => user.username == datas.sendTo)[0].socketId;
 
       if (socketToSendDatas && username != datas.sendTo) {
+        socket.to(socketToSendDatas).emit('privateMessage', datas);
+        socket.emit('privateMessage', datas);
         let search = {
           users: {
             $in: [[username, datas.sendTo], [datas.sendTo, username]]
@@ -123,9 +125,6 @@ const startWebsocketsApp = (server, session, database) => {
             if (isNewConversation) {
               socket.to(socketToSendDatas).emit('newConversation', newConversation);
               socket.emit('newConversation', newConversation);
-            } else {
-              socket.to(socketToSendDatas).emit('privateMessage', datas);
-              socket.emit('privateMessage', datas);
             }
           });
         });
@@ -189,11 +188,13 @@ const startWebsocketsApp = (server, session, database) => {
       limit: 0
     }, results => {
       //Filter and map to retrieve only necessary datas from users.
-      usersInChat = results.filter(user => user.username).map(user => {
+      usersInChat = results.filter(user => user.session.username).map(({
+        session
+      }) => {
         return {
-          username: user.username,
-          image: user.image,
-          socketId: user.socketId
+          username: session.username,
+          image: session.image,
+          socketId: session.socketId
         };
       });
       let usersInChatToClient = usersInChat.map(user => {

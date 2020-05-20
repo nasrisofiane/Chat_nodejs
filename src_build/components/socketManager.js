@@ -97,7 +97,10 @@ const SocketManager = props => {
         });
       }
     });
-    props.socket.on('connectedUsers', usersInChat => props.users[1]([...usersInChat])); //Event that retrieve new messages once the server triggered the event. 
+    props.socket.on('connectedUsers', usersInChat => {
+      props.users[1]([...usersInChat]);
+      console.log(usersInChat);
+    }); //Event that retrieve new messages once the server triggered the event. 
 
     props.socket.on('message', message => {
       let prevScrollBarPosition = props.chatAreaDOM.current.scrollTop;

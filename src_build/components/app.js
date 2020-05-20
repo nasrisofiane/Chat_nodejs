@@ -24,10 +24,11 @@ const App = props => {
   const [hasEvents, setHasEvents] = (0, _react.useState)(false);
   const [view, setView] = (0, _react.useState)(null);
   (0, _react.useEffect)(() => {
+    let url = window.location.href;
     setView(props.appState.view);
 
     if (props.appState.view != 'Login') {
-      setSocket((0, _socket.default)('http://localhost:8080/'));
+      setSocket((0, _socket.default)(url));
     }
   }, []);
   return view ? view == 'Login' ? /*#__PURE__*/_react.default.createElement(_login.default, {
