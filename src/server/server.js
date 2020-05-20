@@ -10,7 +10,7 @@ const MongoStore = require('connect-mongo')(expressSession);
 const app = express();
 const server = http.createServer(app);
 const database = new MongoDbConnection();
-const port = process.env.PORT || 8095;
+const port = process.env.PORT || 3000;
 
 const session = expressSession({
     secret: "my-secret",
