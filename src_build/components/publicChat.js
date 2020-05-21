@@ -18,7 +18,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 const PublicChat = props => {
-  const [messageToSend, setMessageToSend] = (0, _react.useState)("test");
+  const [messageToSend, setMessageToSend] = (0, _react.useState)("");
   /**
   * Send value from the text input to the server event "message"
   */
@@ -31,11 +31,6 @@ const PublicChat = props => {
   };
 
   return /*#__PURE__*/_react.default.createElement("div", {
-    className: "container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center"
-  }, /*#__PURE__*/_react.default.createElement("section", {
-    className: "rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center",
-    id: "section-container"
-  }, /*#__PURE__*/_react.default.createElement("div", {
     className: "container m-0 p-0 align-items-center justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: "row-fluid font-weight-normal",
@@ -79,7 +74,7 @@ const PublicChat = props => {
     href: "/logout"
   }, /*#__PURE__*/_react.default.createElement("i", {
     className: "fas fa-sign-out-alt"
-  }))))))));
+  }))))));
 };
 
 var _default = PublicChat;

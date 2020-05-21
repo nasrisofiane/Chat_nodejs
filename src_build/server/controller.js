@@ -15,6 +15,8 @@ var _errorMessages = _interopRequireDefault(require("./errorMessages"));
 
 var _app = _interopRequireDefault(require("../components/app"));
 
+var _sharp = _interopRequireDefault(require("./utils/sharp"));
+
 var _AppState = _interopRequireDefault(require("./AppState"));
 
 var _react = _interopRequireDefault(require("react"));
@@ -82,7 +84,7 @@ const login = (req, res) => {
   } else if (!username.length) {
     setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.NO_USERNAME, res);
   } else if (!req.session.username) {
-    if (req.file.size > 102000) return setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.FILE_SIZE, res);
+    if (req.file.size > 10500000) return setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.FILE_SIZE, res);
 
     if (username.length <= 8) {
       //Settings for the database query
@@ -105,6 +107,7 @@ const login = (req, res) => {
 
           req.session.image = `${_multerConfig.usersImagesPath}/${req.file.filename}`;
           req.session.save();
+          (0, _sharp.default)(req.file);
           (0, _websockets.sendJoinedChatMessageBroadcaster)(req.session);
           return res.redirect('/');
         }

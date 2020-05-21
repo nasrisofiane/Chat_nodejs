@@ -26,18 +26,18 @@ const UsersList = props => {
       key: index,
       className: "users-square col-lg-1 text-center align-items-center justify-content-center p-0"
     }, /*#__PURE__*/_react.default.createElement("section", {
-      className: "container-fluid p-0"
+      className: "container-fluid h-100 d-flex flex-column p-0"
     }, /*#__PURE__*/_react.default.createElement("p", {
       className: "mb-1 lead text-center"
     }, userInformations.username), /*#__PURE__*/_react.default.createElement("div", {
-      className: "row mb-2 align-items-center justify-content-center"
+      className: "row mb-2 align-items-center justify-content-center h-100"
     }, /*#__PURE__*/_react.default.createElement("img", {
       className: "col-10",
       src: userInformations.image
     }), /*#__PURE__*/_react.default.createElement("div", {
       className: `position-absolute col-12 m-0  p-0 user-status-connected align-self-end d-flex justify-content-end`
     }, /*#__PURE__*/_react.default.createElement("div", {
-      className: "rounded-pill p-1 bg-dark d-flex justify-content-center"
+      className: "rounded p-1 bg-dark d-flex justify-content-center users-status"
     }, /*#__PURE__*/_react.default.createElement("p", {
       className: `p-1 m-0 ${showPendingMessages} justify-content-center text-success align-items-center`
     }, userInformations.pendingMessages), /*#__PURE__*/_react.default.createElement("i", {

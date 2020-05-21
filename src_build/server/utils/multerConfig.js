@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.upload = exports.usersImagesPath = void 0;
+exports.upload = exports.fullImagesPath = exports.usersImagesPath = void 0;
 
 var _multer = _interopRequireDefault(require("multer"));
 
@@ -12,11 +12,13 @@ var _path = _interopRequireDefault(require("path"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const usersImagesPath = `/uploads/images`;
+exports.usersImagesPath = usersImagesPath;
+const fullImagesPath = `${_path.default.join(__dirname, '../../..')}/public${usersImagesPath}`;
 /**
  * Filter that will check the file source and return true if this is an image
  */
 
-exports.usersImagesPath = usersImagesPath;
+exports.fullImagesPath = fullImagesPath;
 
 const customFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -27,13 +29,15 @@ const customFilter = (req, file, cb) => {
 };
 
 const storage = _multer.default.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${_path.default.join(__dirname, '../../..')}/public${usersImagesPath}`);
-  },
+  //Previous storage
+  // destination: (req, file, cb) => {
+  //   cb(null, fullImagesPath);
+  // },
   filename: (req, file, cb) => {
     let fileExt = _path.default.extname(file.originalname);
 
-    cb(null, `${file.fieldname}_${Date.now()}.${fileExt}`);
+    let fullname = `thumbnail_${file.fieldname}_${Date.now()}${fileExt}`;
+    cb(null, fullname);
   }
 });
 
