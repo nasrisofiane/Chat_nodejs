@@ -1,11 +1,13 @@
 import express from "express";
 import router from "./routes";
+import dotenv from 'dotenv';
 import path from 'path';
 import http from 'http';
 import MongoDbConnection from './MongoDbConnection';
 import expressSession from 'express-session';
 import startWebsocketsApp from './websockets';
 
+dotenv.config();
 const MongoStore = require('connect-mongo')(expressSession);
 const app = express();
 const server = http.createServer(app);
