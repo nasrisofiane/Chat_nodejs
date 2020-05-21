@@ -9,7 +9,7 @@ class MongoDbConnection{
     this.ObjectId = this.mongoDb.ObjectID;
     this.MongoClient = this.mongoDb.MongoClient;
     this.assert = require('assert');
-    this.url = `mongodb+srv://webwarriorsteam:f6gJ8YZ1bAtS176L@cluster0-0it93.gcp.mongodb.net/chat?retryWrites=true&w=majority`;
+    this.url = process.env.CLOUD_MONGODB_URI;
     this.databaseName = 'chat';
     
     //Every action to database will check if a collection is well writed by checking in this array with an assert function.
