@@ -31,12 +31,12 @@ const PublicChat = props => {
   };
 
   return /*#__PURE__*/_react.default.createElement("div", {
-    className: "container h-100 bg-secondary"
+    className: "container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("section", {
-    className: "rounded-0 row h-100 align-items-center justify-content-center",
+    className: "rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center",
     id: "section-container"
   }, /*#__PURE__*/_react.default.createElement("div", {
-    className: "container align-items-center justify-content-center"
+    className: "container m-0 p-0 align-items-center justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: "row-fluid font-weight-normal",
     id: "username-container"

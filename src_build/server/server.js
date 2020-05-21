@@ -9,6 +9,8 @@ var _express = _interopRequireDefault(require("express"));
 
 var _routes = _interopRequireDefault(require("./routes"));
 
+var _dotenv = _interopRequireDefault(require("dotenv"));
+
 var _path = _interopRequireDefault(require("path"));
 
 var _http = _interopRequireDefault(require("http"));
@@ -20,6 +22,8 @@ var _expressSession = _interopRequireDefault(require("express-session"));
 var _websockets = _interopRequireDefault(require("./websockets"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_dotenv.default.config();
 
 const MongoStore = require('connect-mongo')(_expressSession.default);
 

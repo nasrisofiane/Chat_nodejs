@@ -117,7 +117,7 @@ const ChatManager = props => {
   };
 
   return /*#__PURE__*/_react.default.createElement("div", {
-    className: "container h-100 bg-secondary"
+    className: "container-fluid m-0 p-0 h-100 bg-secondary"
   }, /*#__PURE__*/_react.default.createElement(_socketManager.default, {
     messagesReceived: [messagesReceived, setMessagesReceived],
     privateConversations: [privateConversations, setPrivateConversations],

@@ -91,7 +91,7 @@ const ChatManager = (props) => {
         }
     }
 
-    return (<div className="container h-100 bg-secondary">
+    return (<div className="container-fluid m-0 p-0 h-100 bg-secondary">
         <SocketManager
             messagesReceived={[messagesReceived, setMessagesReceived]}
             privateConversations={[privateConversations, setPrivateConversations]}

@@ -35,11 +35,11 @@ const PrivateChat = (props) => {
 
 
     return (
-        <div className="container h-100 bg-secondary">
+        <div className="container-fluid m-0 p-0 h-100 bg-secondary d-flex justify-content-center align-items-center">
 
-            <section className="row h-100 align-items-center justify-content-center" id="section-container">
+            <section className="container p-0 m-0 h-100 align-items-center d-flex justify-content-center align-items-center" id="section-container">
 
-                <div className="container align-items-center justify-content-center">
+                <div className="container align-items-center m-0 p-0 justify-content-center">
                     <div className="row-fluid font-weight-normal" id="username-container">
                         <p className="rounded-0 alert m-0 p-2 fade show alert-success text-center col-xl-6  lead">{props.usernameMessage}</p>
                     </div>
