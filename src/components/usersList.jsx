@@ -15,13 +15,13 @@ const UsersList = (props) => {
 
         return (
             <div onClick={() => checkMyDivInList(userInformations)} key={index} className="users-square col-lg-1 text-center align-items-center justify-content-center p-0">
-                <section className="container-fluid p-0">
+                <section className="container-fluid h-100 d-flex flex-column p-0">
                     <p className="mb-1 lead text-center">{userInformations.username}</p>
 
-                    <div className="row mb-2 align-items-center justify-content-center">
+                    <div className="row mb-2 align-items-center justify-content-center h-100">
                         <img className="col-10" src={userInformations.image} />
                         <div className={`position-absolute col-12 m-0  p-0 user-status-connected align-self-end d-flex justify-content-end`}>
-                            <div className="rounded-pill p-1 bg-dark d-flex justify-content-center">
+                            <div className="rounded p-1 bg-dark d-flex justify-content-center users-status">
                                 <p className={`p-1 m-0 ${showPendingMessages} justify-content-center text-success align-items-center`}>{userInformations.pendingMessages}</p>
                                 <i className={`fas fa-plug ${iconConnectedColor}`}></i>
                             </div>

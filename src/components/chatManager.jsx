@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PublicChat from './publicChat';
 import PrivateChat from './privateChat';
 import SocketManager from './socketManager';
-let yo = { title : "haah"}
+import Loading from './loading';
 
 const ChatManager = (props) => {
 
@@ -46,7 +46,7 @@ const ChatManager = (props) => {
      * @param {*} prevMaxScrollBarHeight 
      */
     const chatScroller = (prevScrollBarPosition, prevMaxScrollBarHeight) => {
-        
+
         let newMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
 
         if (prevScrollBarPosition == prevMaxScrollBarHeight) {
@@ -75,7 +75,7 @@ const ChatManager = (props) => {
             />;
         }
         else if (!errorMessage && talkTo) {
-            
+
             return <PrivateChat
                 user={talkTo}
                 conversation={privateConversations[talkTo.username]}
@@ -91,22 +91,29 @@ const ChatManager = (props) => {
         }
     }
 
-    return (<div className="container-fluid m-0 p-0 h-100 bg-secondary">
-        <SocketManager
-            messagesReceived={[messagesReceived, setMessagesReceived]}
-            privateConversations={[privateConversations, setPrivateConversations]}
-            usernameMessage={[usernameMessage, setUsernameMessage]}
-            myInformations={[myInformations, setMyInformations]}
-            users={[users, setUsers]}
-            errorMessage={[errorMessage, setErrorMessage]}
-            chatScroller={chatScroller}
-            socket={props.socket}
-            talkTo={[talkTo, setTalkTo]}
-            chatAreaDOM={chatAreaDOM}
-        />
+    return (
+        <div className="container-fluid m-0 p-0 h-100 bg-secondary">
+            <SocketManager
+                messagesReceived={[messagesReceived, setMessagesReceived]}
+                privateConversations={[privateConversations, setPrivateConversations]}
+                usernameMessage={[usernameMessage, setUsernameMessage]}
+                myInformations={[myInformations, setMyInformations]}
+                users={[users, setUsers]}
+                errorMessage={[errorMessage, setErrorMessage]}
+                chatScroller={chatScroller}
+                socket={props.socket}
+                talkTo={[talkTo, setTalkTo]}
+                chatAreaDOM={chatAreaDOM}
+            />
 
-        {windowDisplayer()}
-    </div>);
+            <div className="container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center">
+                <section className="rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center" id="section-container">
+                    {windowDisplayer()}
+                </section>
+
+            </div>
+
+        </div>);
 
 
 

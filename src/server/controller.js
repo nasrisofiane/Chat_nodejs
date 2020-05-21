@@ -3,6 +3,7 @@ import { database } from './server';
 import { sendJoinedChatMessageBroadcaster, sendLeavedChatMessageBroadcaster } from './websockets';
 import errorMessagesEnum from './errorMessages';
 import App from "../components/app";
+import resizeFile from './utils/sharp';
 import AppState from "./AppState";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
@@ -58,6 +59,7 @@ export const logout = (req, res) => {
  * Check sent image and username if that correspond to the rules and redirect to the depending view.
  */
 export const login = (req, res) => {
+    
     //Allow only alphanumeric character and delete all other characters.
     let username = req.body.username.replace(/[^A-Z0-9]/ig, "");
     
@@ -71,7 +73,7 @@ export const login = (req, res) => {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
     }
     else if (!req.session.username) {
-        if(req.file.size > 102000) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
+        if(req.file.size > 10500000) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
 
         if (username.length <= 8) {
             //Settings for the database query
@@ -98,6 +100,7 @@ export const login = (req, res) => {
                     //Attach the correct path to the user's image
                     req.session.image = `${usersImagesPath}/${req.file.filename}`;
                     req.session.save();
+                    resizeFile(req.file);
                     sendJoinedChatMessageBroadcaster(req.session);
                     return res.redirect('/');
                 }

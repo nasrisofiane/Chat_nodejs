@@ -15,6 +15,14 @@ html{
 
 .users-square{
     max-width: 78px;
+    margin: 0px 10px;
+}
+
+#loading-module{
+    max-width: 100px;
+    max-height: 100px;
+    width: 20vw;
+    height: 20vw;
 }
 
 .img-private-chat{

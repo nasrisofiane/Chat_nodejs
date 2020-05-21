@@ -3,7 +3,7 @@
 
 A simple chat where you can login with an username and an image, there's a general chat and private messages.
 
-The chat is responsive too and works well on mobile.
+The chat is responsive too and works on mobile.
 
 # Project Goal
 
@@ -14,10 +14,10 @@ The goal of this project is to make the first step into the nodejs world, this i
 	- ExpressJS
 	- ExpressSession
 	- Express Socket session
-	- SessionStore
 	- SocketIo
 	- ReactJS + SSR
 	- MongoDB
+	- Connect-Mongo
 
 # Test the project !
-Project will be deployed soon on a cloud server.
+You can test the project here [https://minimalist-chat.herokuapp.com/](https://minimalist-chat.herokuapp.com/)

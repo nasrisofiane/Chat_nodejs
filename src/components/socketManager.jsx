@@ -83,7 +83,7 @@ const SocketManager = (props) => {
 
         props.socket.on('connectedUsers', usersInChat => {
             props.users[1]([...usersInChat]); 
-
+            
             if(props.talkTo[0]){
                 let TalkToUpdated = usersInChat.filter( user => props.talkTo[0].username == user.username)[0];
                 props.talkTo[1](TalkToUpdated);
