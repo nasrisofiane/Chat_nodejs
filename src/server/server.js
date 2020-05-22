@@ -19,9 +19,9 @@ const session = expressSession({
     resave: false,
     saveUninitialized: true,
     store: new MongoStore({
-        url : database.url,
-        collection : database.collectionsName.sessions,
-        stringify : false
+        url: database.url,
+        collection: database.collectionsName.sessions,
+        stringify: false,
     })
 });
 

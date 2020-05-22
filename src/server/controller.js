@@ -51,8 +51,7 @@ export const chat = (req, res) => {
  */
 export const logout = (req, res) => {
     sendLeavedChatMessageBroadcaster(req.session);
-    req.session.destroy();
-    return res.redirect('/');
+    req.session.destroy(() => res.redirect('/'));
 }
 
 /**
