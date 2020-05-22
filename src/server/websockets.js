@@ -137,7 +137,7 @@ const startWebsocketsApp = (server, session, database) => {
         });
 
         socket.on('messagesSeen', (conversationId) => {
-
+            
             database.actionToDatabase(database.getFewDocuments, 'privateConversations', { limit: 0, searchByFields: { _id: conversationId } }, (results) => {
 
                 if (results.length && results[0].users && results[0].users.includes(username)) {

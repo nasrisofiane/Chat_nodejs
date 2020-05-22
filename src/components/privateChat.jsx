@@ -23,7 +23,7 @@ const PrivateChat = (props) => {
     useEffect(() => {
         messageSeen();
         return () => messageSeen();
-    }, []);
+    }, [props.conversation]);
 
     /**
      * Trigger socket event to the server.
