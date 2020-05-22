@@ -296,8 +296,7 @@ const sendLeavedChatMessageBroadcaster = (session, callback) => {
 
     if (socketSession.handshake.session.username == session.username) {
       socketSession.disconnect();
-      socketSession.handshake.session.destroy();
-      callback();
+      socketSession.handshake.session.destroy(err => callback());
     }
   }
 };
