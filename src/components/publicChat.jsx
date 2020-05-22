@@ -23,7 +23,7 @@ const PublicChat = (props) => {
             <div className="row-fluid font-weight-normal" id="username-container">
                 <p className="rounded-0 alert m-0 p-2 fade show alert-success text-center col-xl-6  lead">{props.usernameMessage}</p>
             </div>
-            {props.users ? <UsersList myInformations={props.myInformations} privateConversations={props.privateConversations} users={props.users} prepareConversation={props.prepareConversation} /> : null}
+            {props.users ? <UsersList chatIsReady={props.chatIsReady} myInformations={props.myInformations} privateConversations={props.privateConversations} users={props.users} prepareConversation={props.prepareConversation} /> : null}
             <div id="chat-container" className="row-fluid bg-light p-3">
 
 

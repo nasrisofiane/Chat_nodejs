@@ -11,12 +11,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const Loading = () => {
   return /*#__PURE__*/_react.default.createElement("div", {
+    className: "container-fluid position-absolute d-flex justify-content-center align-items-center bg-secondary h-100",
+    id: "loading-container"
+  }, /*#__PURE__*/_react.default.createElement("div", {
     className: "spinner-border text-primary",
     id: "loading-module",
     role: "status"
   }, /*#__PURE__*/_react.default.createElement("span", {
     className: "sr-only"
-  }, "Loading..."));
+  }, "Loading...")));
 };
 
 var _default = Loading;

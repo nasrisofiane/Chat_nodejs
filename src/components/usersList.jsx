@@ -4,6 +4,10 @@ const UsersList = (props) => {
 
     const [openModalButton, setOpenModalButton] = useState(React.createRef());
 
+    useEffect(()=>{
+        
+    },[]);
+
     /**
      * Generate a div with the user's informations in the list of users
      */
@@ -12,6 +16,8 @@ const UsersList = (props) => {
         getPendingMessages(userInformations);
         let iconConnectedColor = userInformations.connected ? 'text-success' : 'text-danger';
         let showPendingMessages = userInformations.pendingMessages <= 0 ? 'd-none' : 'd-flex';
+
+        usersListIsReady(index);
 
         return (
             <div onClick={() => checkMyDivInList(userInformations)} key={index} className="users-square col-lg-1 text-center align-items-center justify-content-center p-0">
@@ -28,11 +34,18 @@ const UsersList = (props) => {
                         </div>
                     </div>
                 </section>
-
+                
                 {props.myInformations.username == userInformations.username ? createModal() : null}
             </div>
 
         );
+    }
+
+    /**
+     * If the index correspond to length of the array, it mean that the users list is loaded
+     */
+    const usersListIsReady = (index) =>{
+        props.users.length - 1 == index ? props.chatIsReady() : null;
     }
 
     /**

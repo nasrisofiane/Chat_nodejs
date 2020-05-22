@@ -38,6 +38,7 @@ const PublicChat = props => {
   }, /*#__PURE__*/_react.default.createElement("p", {
     className: "rounded-0 alert m-0 p-2 fade show alert-success text-center col-xl-6  lead"
   }, props.usernameMessage)), props.users ? /*#__PURE__*/_react.default.createElement(_usersList.default, {
+    chatIsReady: props.chatIsReady,
     myInformations: props.myInformations,
     privateConversations: props.privateConversations,
     users: props.users,

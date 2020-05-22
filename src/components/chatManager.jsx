@@ -13,6 +13,7 @@ const ChatManager = (props) => {
     const [users, setUsers] = useState([]);
     const [talkTo, setTalkTo] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
     const [chatAreaDOM, setChatAreaDOM] = useState(React.createRef());
 
     /**
@@ -24,6 +25,10 @@ const ChatManager = (props) => {
         if (!privateConversations[user.username]) {
             setPrivateConversations(prevConversations => { return { ...prevConversations, [user.username]: {} } });
         }
+    }
+
+    const chatIsReady = () =>{
+        setIsLoaded(true);
     }
 
     /**
@@ -45,18 +50,18 @@ const ChatManager = (props) => {
      * @param {*} prevScrollBarPosition 
      * @param {*} prevMaxScrollBarHeight 
      */
-    const chatScroller = (prevScrollBarPosition, prevMaxScrollBarHeight) => {
+    // const chatScroller = (prevScrollBarPosition, prevMaxScrollBarHeight) => {
 
-        let newMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
+    //     let newMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
 
-        if (prevScrollBarPosition == prevMaxScrollBarHeight) {
-            chatAreaDOM.current.scrollTo({
-                top: newMaxScrollBarHeight,
-                left: 0,
-                behavior: 'smooth'
-            });
-        }
-    }
+    //     if (prevScrollBarPosition == prevMaxScrollBarHeight) {
+    //         chatAreaDOM.current.scrollTo({
+    //             top: newMaxScrollBarHeight,
+    //             left: 0,
+    //             behavior: 'smooth'
+    //         });
+    //     }
+    // }
 
     /**
      * Return differents view depending on conditions.
@@ -68,6 +73,7 @@ const ChatManager = (props) => {
                 messagesReceived={messagesReceived}
                 usernameMessage={usernameMessage}
                 users={users}
+                chatIsReady={chatIsReady}
                 myInformations={myInformations}
                 chatAreaDOM={chatAreaDOM}
                 socket={props.socket}
@@ -100,14 +106,13 @@ const ChatManager = (props) => {
                 myInformations={[myInformations, setMyInformations]}
                 users={[users, setUsers]}
                 errorMessage={[errorMessage, setErrorMessage]}
-                chatScroller={chatScroller}
                 socket={props.socket}
                 talkTo={[talkTo, setTalkTo]}
-                chatAreaDOM={chatAreaDOM}
             />
 
             <div className="container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center">
                 <section className="rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center" id="section-container">
+                    {isLoaded ? null : <Loading/>}
                     {windowDisplayer()}
                 </section>
 

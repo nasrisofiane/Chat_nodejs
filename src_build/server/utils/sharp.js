@@ -25,8 +25,6 @@ const resizeFile = file => {
   (0, _sharp.default)(file.path).resize(resizeToWidth, proportionalHeight).toFile(`${_multerConfig.fullImagesPath}/${file.filename}`, (err, resizeImage) => {
     if (err) {
       console.log(err);
-    } else {
-      console.log(resizeImage);
     }
   });
 };

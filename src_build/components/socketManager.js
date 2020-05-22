@@ -107,9 +107,6 @@ const SocketManager = props => {
     }); //Event that retrieve new messages once the server triggered the event. 
 
     props.socket.on('message', message => {
-      let prevScrollBarPosition = props.chatAreaDOM.current.scrollTop;
-      let prevMaxScrollBarHeight = props.chatAreaDOM.current.scrollTopMax;
-
       if (message.messageType == "me") {
         props.myInformations[1](prevInformations => {
           return { ...prevInformations,
@@ -121,8 +118,6 @@ const SocketManager = props => {
       } else {
         props.messagesReceived[1](prevMessages => [...prevMessages, message]);
       }
-
-      props.chatScroller(prevScrollBarPosition, prevMaxScrollBarHeight);
     });
   };
 

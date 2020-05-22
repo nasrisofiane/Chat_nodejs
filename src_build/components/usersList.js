@@ -13,6 +13,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 const UsersList = props => {
   const [openModalButton, setOpenModalButton] = (0, _react.useState)(_react.default.createRef());
+  (0, _react.useEffect)(() => {}, []);
   /**
    * Generate a div with the user's informations in the list of users
    */
@@ -21,6 +22,7 @@ const UsersList = props => {
     getPendingMessages(userInformations);
     let iconConnectedColor = userInformations.connected ? 'text-success' : 'text-danger';
     let showPendingMessages = userInformations.pendingMessages <= 0 ? 'd-none' : 'd-flex';
+    usersListIsReady(index);
     return /*#__PURE__*/_react.default.createElement("div", {
       onClick: () => checkMyDivInList(userInformations),
       key: index,
@@ -43,6 +45,14 @@ const UsersList = props => {
     }, userInformations.pendingMessages), /*#__PURE__*/_react.default.createElement("i", {
       className: `fas fa-plug ${iconConnectedColor}`
     }))))), props.myInformations.username == userInformations.username ? createModal() : null);
+  };
+  /**
+   * If the index correspond to length of the array, it mean that the users list is loaded
+   */
+
+
+  const usersListIsReady = index => {
+    props.users.length - 1 == index ? props.chatIsReady() : null;
   };
   /**
    * Count and return the number of pending messages.

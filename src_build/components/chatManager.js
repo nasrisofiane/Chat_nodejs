@@ -29,6 +29,7 @@ const ChatManager = props => {
   const [users, setUsers] = (0, _react.useState)([]);
   const [talkTo, setTalkTo] = (0, _react.useState)(null);
   const [errorMessage, setErrorMessage] = (0, _react.useState)(null);
+  const [isLoaded, setIsLoaded] = (0, _react.useState)(false);
   const [chatAreaDOM, setChatAreaDOM] = (0, _react.useState)(_react.default.createRef());
   /**
    * Prepare conversation, if the opened conversation is new, add an empty object to the conversations
@@ -45,6 +46,10 @@ const ChatManager = props => {
         };
       });
     }
+  };
+
+  const chatIsReady = () => {
+    setIsLoaded(true);
   };
   /**
    * set Talkto to null to change the view.
@@ -69,19 +74,17 @@ const ChatManager = props => {
    * @param {*} prevScrollBarPosition 
    * @param {*} prevMaxScrollBarHeight 
    */
+  // const chatScroller = (prevScrollBarPosition, prevMaxScrollBarHeight) => {
+  //     let newMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
+  //     if (prevScrollBarPosition == prevMaxScrollBarHeight) {
+  //         chatAreaDOM.current.scrollTo({
+  //             top: newMaxScrollBarHeight,
+  //             left: 0,
+  //             behavior: 'smooth'
+  //         });
+  //     }
+  // }
 
-
-  const chatScroller = (prevScrollBarPosition, prevMaxScrollBarHeight) => {
-    let newMaxScrollBarHeight = chatAreaDOM.current.scrollTopMax;
-
-    if (prevScrollBarPosition == prevMaxScrollBarHeight) {
-      chatAreaDOM.current.scrollTo({
-        top: newMaxScrollBarHeight,
-        left: 0,
-        behavior: 'smooth'
-      });
-    }
-  };
   /**
    * Return differents view depending on conditions.
    */
@@ -94,6 +97,7 @@ const ChatManager = props => {
         messagesReceived: messagesReceived,
         usernameMessage: usernameMessage,
         users: users,
+        chatIsReady: chatIsReady,
         myInformations: myInformations,
         chatAreaDOM: chatAreaDOM,
         socket: props.socket,
@@ -123,16 +127,14 @@ const ChatManager = props => {
     myInformations: [myInformations, setMyInformations],
     users: [users, setUsers],
     errorMessage: [errorMessage, setErrorMessage],
-    chatScroller: chatScroller,
     socket: props.socket,
-    talkTo: [talkTo, setTalkTo],
-    chatAreaDOM: chatAreaDOM
+    talkTo: [talkTo, setTalkTo]
   }), /*#__PURE__*/_react.default.createElement("div", {
     className: "container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("section", {
     className: "rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center",
     id: "section-container"
-  }, windowDisplayer())));
+  }, isLoaded ? null : /*#__PURE__*/_react.default.createElement(_loading.default, null), windowDisplayer())));
 };
 
 var _default = ChatManager;

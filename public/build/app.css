@@ -18,6 +18,10 @@ html{
     margin: 0px 10px;
 }
 
+#loading-container{
+    z-index: 1;
+}
+
 #loading-module{
     max-width: 100px;
     max-height: 100px;

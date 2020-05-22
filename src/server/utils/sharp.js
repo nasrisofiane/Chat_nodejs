@@ -19,8 +19,6 @@ const resizeFile = (file) =>{
     sharp(file.path).resize(resizeToWidth, proportionalHeight).toFile(`${fullImagesPath}/${file.filename}`, (err, resizeImage) => {
         if (err) {
              console.log(err);
-        } else {
-             console.log(resizeImage);
         }
     });
 }

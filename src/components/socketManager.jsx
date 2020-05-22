@@ -10,7 +10,7 @@ const SocketManager = (props) => {
     /**
      * Remove all socket events
      */
-    const removeEvents =  () =>{
+    const removeEvents = () => {
         props.socket.off('alreadyConnected');
         props.socket.off('lastMessages');
         props.socket.off('lastConversations');
@@ -42,9 +42,9 @@ const SocketManager = (props) => {
         });
 
         props.socket.on('messagesSeen', conversationUser => {
-            if(conversationUser){
-                props.privateConversations[0][conversationUser].messages.map( message => message.seen = true);
-                props.privateConversations[1](prevConversations => {return {...prevConversations}});
+            if (conversationUser) {
+                props.privateConversations[0][conversationUser].messages.map(message => message.seen = true);
+                props.privateConversations[1](prevConversations => { return { ...prevConversations } });
             }
         });
 
@@ -82,18 +82,16 @@ const SocketManager = (props) => {
         });
 
         props.socket.on('connectedUsers', usersInChat => {
-            props.users[1]([...usersInChat]); 
-            
-            if(props.talkTo[0]){
-                let TalkToUpdated = usersInChat.filter( user => props.talkTo[0].username == user.username)[0];
+            props.users[1]([...usersInChat]);
+
+            if (props.talkTo[0]) {
+                let TalkToUpdated = usersInChat.filter(user => props.talkTo[0].username == user.username)[0];
                 props.talkTo[1](TalkToUpdated);
             }
         });
 
         //Event that retrieve new messages once the server triggered the event. 
         props.socket.on('message', message => {
-            let prevScrollBarPosition = props.chatAreaDOM.current.scrollTop;
-            let prevMaxScrollBarHeight = props.chatAreaDOM.current.scrollTopMax;
 
             if (message.messageType == "me") {
 
@@ -111,7 +109,6 @@ const SocketManager = (props) => {
                 props.messagesReceived[1](prevMessages => [...prevMessages, message]);
             }
 
-            props.chatScroller(prevScrollBarPosition, prevMaxScrollBarHeight);
         }
         );
     }
