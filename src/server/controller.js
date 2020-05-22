@@ -50,8 +50,7 @@ export const chat = (req, res) => {
  * Will redirect to login once the destroy session has been done.
  */
 export const logout = (req, res) => {
-    sendLeavedChatMessageBroadcaster(req.session);
-    req.session.destroy(() => res.redirect('/'));
+    sendLeavedChatMessageBroadcaster(req.session, () => res.redirect('/'));
 }
 
 /**
