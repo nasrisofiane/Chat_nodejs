@@ -283,13 +283,23 @@ const sendJoinedChatMessageBroadcaster = session => {
 
 exports.sendJoinedChatMessageBroadcaster = sendJoinedChatMessageBroadcaster;
 
-const sendLeavedChatMessageBroadcaster = session => {
+const sendLeavedChatMessageBroadcaster = (session, callback) => {
   //Send a message to the chat to alert that the user leaved the chat
   webSockets.sockets.emit('message', {
     messageType: messageType.DISCONNECTED,
     username: session.username,
     message: 'leaved the chat'
   });
+
+  if (webSockets.sockets.clients().connected[session.socketId]) {
+    let socketSession = webSockets.sockets.clients().connected[session.socketId];
+
+    if (socketSession.handshake.session.username == session.username) {
+      socketSession.disconnect();
+      socketSession.handshake.session.destroy();
+      callback();
+    }
+  }
 };
 
 exports.sendLeavedChatMessageBroadcaster = sendLeavedChatMessageBroadcaster;

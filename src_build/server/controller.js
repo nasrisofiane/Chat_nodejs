@@ -62,9 +62,7 @@ const chat = (req, res) => {
 exports.chat = chat;
 
 const logout = (req, res) => {
-  (0, _websockets.sendLeavedChatMessageBroadcaster)(req.session);
-  req.session.destroy();
-  return res.redirect('/');
+  (0, _websockets.sendLeavedChatMessageBroadcaster)(req.session, () => res.redirect('/'));
 };
 /**
  * Check sent image and username if that correspond to the rules and redirect to the depending view.
