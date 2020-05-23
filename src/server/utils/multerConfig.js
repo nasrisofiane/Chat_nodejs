@@ -1,6 +1,7 @@
 
 import multer from 'multer';
 import path from 'path';
+export const imageLimit = 10500000;
 export const usersImagesPath = `/uploads/images`;
 export const fullImagesPath = `${path.join(__dirname, '../../..')}/public${usersImagesPath}`;
 

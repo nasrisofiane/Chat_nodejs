@@ -34,7 +34,7 @@ const PublicChat = (props) => {
                     <div className="row pl-2 pr-2">
                         <input className="rounded-0 col-sm-9 form-control" value={messageToSend} onKeyDown={(event) => event.keyCode === 13 ? sendMessage() : null} onChange={(e) => setMessageToSend(e.target.value)} type="text" placeholder="Write a message here" />
                         <button className="rounded-0 col-sm-2 btn btn-primary" onClick={() => sendMessage()}><i className="fas fa-paper-plane"></i></button>
-                        <a className="rounded-0 col-sm-1 btn btn-danger align-self-end" id="disconnect-button" href="/logout"><i className="fas fa-sign-out-alt"></i></a>
+                        <button className="rounded-0 col-sm-1 btn btn-danger align-self-end" id="disconnect-button" onClick={props.logOut}><i className="fas fa-sign-out-alt"></i></button>
                     </div>
                 </div>
 

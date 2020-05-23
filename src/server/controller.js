@@ -1,4 +1,4 @@
-import { usersImagesPath } from './utils/multerConfig.js';
+import { usersImagesPath, imageLimit } from './utils/multerConfig.js';
 import { database } from './server';
 import { sendJoinedChatMessageBroadcaster, sendLeavedChatMessageBroadcaster } from './websockets';
 import errorMessagesEnum from './errorMessages';
@@ -47,13 +47,6 @@ export const chat = (req, res) => {
 }
 
 /**
- * Will redirect to login once the destroy session has been done.
- */
-export const logout = (req, res) => {
-    sendLeavedChatMessageBroadcaster(req.session, () => res.redirect('/'));
-}
-
-/**
  * Check sent image and username if that correspond to the rules and redirect to the depending view.
  */
 export const login = (req, res) => {
@@ -71,7 +64,7 @@ export const login = (req, res) => {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
     }
     else if (!req.session.username) {
-        if(req.file.size > 10500000) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
+        if(req.file.size > imageLimit) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
 
         if (username.length <= 8) {
             //Settings for the database query

@@ -3,6 +3,7 @@ import PublicChat from './publicChat';
 import PrivateChat from './privateChat';
 import SocketManager from './socketManager';
 import Loading from './loading';
+import { act } from 'react-dom/test-utils';
 
 const ChatManager = (props) => {
 
@@ -25,6 +26,16 @@ const ChatManager = (props) => {
         if (!privateConversations[user.username]) {
             setPrivateConversations(prevConversations => { return { ...prevConversations, [user.username]: {} } });
         }
+    }
+
+    /**
+     * Delete the user's session once the session is destroyed, an action is sent from server and parse with eval.
+     */
+    const logOut = () =>{
+        props.socket.emit('deleteAccount', null, (isDestroyed, action) => {
+            let reload = new Function(action);
+            isDestroyed ? reload() : null;
+        });
     }
 
     const chatIsReady = () =>{
@@ -73,6 +84,7 @@ const ChatManager = (props) => {
                 messagesReceived={messagesReceived}
                 usernameMessage={usernameMessage}
                 users={users}
+                logOut={logOut}
                 chatIsReady={chatIsReady}
                 myInformations={myInformations}
                 chatAreaDOM={chatAreaDOM}
@@ -84,6 +96,7 @@ const ChatManager = (props) => {
 
             return <PrivateChat
                 user={talkTo}
+                logOut={logOut}
                 conversation={privateConversations[talkTo.username]}
                 usernameMessage={usernameMessage}
                 myInformations={myInformations}

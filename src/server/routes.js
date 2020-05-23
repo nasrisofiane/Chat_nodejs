@@ -14,11 +14,6 @@ router.get('/', chat);
  */
 router.post('/', upload.single('uploadFile'), login);
 
-/**
- * The logout route will redirect to login once the destroy session has been done.
- */
-router.get('/logout', logout);
-
 export default router;
 
 

@@ -30,10 +30,18 @@ const startWebsocketsApp = (server, session, database) => {
         socket.on('disconnect', () => {
             if (socketsPerUser(socket) === 0) {
                 getConnectedUsers(socket);
-                socket.handshake.session.socketId = null;
-                socket.handshake.session.cookie.maxAge = new Date(new Date().getTime() + 60 * 60000);
-                socket.handshake.session.save();
+
+                if(socket.handshake.session){
+                    socket.handshake.session.socketId = null;
+                    socket.handshake.session.cookie.maxAge = new Date(new Date().getTime() + 60 * 60000);
+                    socket.handshake.session.save();
+                }
             }
+        });
+
+        socket.on('deleteAccount', (message, callback) =>{
+            //On deleteAccount, give answer to the client with an action to perform is 'isDestroyed' is equal to true
+            sendLeavedChatMessageBroadcaster(socket, (isDestroyed, action) => { callback(isDestroyed, action)});
         });
 
         if (!username) {
@@ -113,7 +121,7 @@ const startWebsocketsApp = (server, session, database) => {
                 socket.to(userToSendDatas.socketId).emit('privateMessage', datas);
             }
 
-            if(userToSendDatas && username != datas.sendTo){
+            if (userToSendDatas && username != datas.sendTo) {
                 socket.emit('privateMessage', datas);
 
                 let search = { users: { $in: [[username, datas.sendTo], [datas.sendTo, username]] } }
@@ -124,7 +132,7 @@ const startWebsocketsApp = (server, session, database) => {
                         datas,
                         results,
                         (isNewConversation, newConversation) => {
-    
+
                             if (isNewConversation) {
                                 userToSendDatas.socketId ? socket.to(userToSendDatas.socketId).emit('newConversation', newConversation) : null;
                                 socket.emit('newConversation', newConversation);
@@ -137,7 +145,7 @@ const startWebsocketsApp = (server, session, database) => {
         });
 
         socket.on('messagesSeen', (conversationId) => {
-            
+
             database.actionToDatabase(database.getFewDocuments, 'privateConversations', { limit: 0, searchByFields: { _id: conversationId } }, (results) => {
 
                 if (results.length && results[0].users && results[0].users.includes(username)) {
@@ -314,26 +322,27 @@ const sendJoinedChatMessageBroadcaster = (session) => {
  * Function that alert everyones that a user leaved the chat
  * @param {*} socketId 
  */
-const sendLeavedChatMessageBroadcaster = (session, callback) => {
+const sendLeavedChatMessageBroadcaster = (socket, callback) => {
 
-    //Send a message to the chat to alert that the user leaved the chat
-    webSockets.sockets.emit(
-        'message',
-        {
-            messageType: messageType.DISCONNECTED,
-            username: session.username,
-            message: 'leaved the chat'
+    // Send a message to the chat to alert that the user leaved the chat
+    // webSockets.sockets.emit(
+    //     'message',
+    //     {
+    //         messageType: messageType.DISCONNECTED,
+    //         username: socket.handshake.session.username,
+    //         message: 'leaved the chat'
+    //     }
+    // );
+    socket.handshake.session.destroy(err =>{
+        if(err){
+            callback(false, null);
         }
-    );
-
-    if(webSockets.sockets.clients().connected[session.socketId]){
-        let socketSession = webSockets.sockets.clients().connected[session.socketId];
-
-        if(socketSession.handshake.session.username == session.username){
-            socketSession.disconnect();
-            socketSession.handshake.session.destroy((err) => callback());
+        else{
+            callback(true, 'window.location.reload()');
+            socket.disconnect();
         }
-    }
+    });
+
 }
 
 export default startWebsocketsApp;
