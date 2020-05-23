@@ -25,10 +25,5 @@ router.get('/', _controller.chat);
  */
 
 router.post('/', _multerConfig.upload.single('uploadFile'), _controller.login);
-/**
- * The logout route will redirect to login once the destroy session has been done.
- */
-
-router.get('/logout', _controller.logout);
 var _default = router;
 exports.default = _default;

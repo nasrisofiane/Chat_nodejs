@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.upload = exports.fullImagesPath = exports.usersImagesPath = void 0;
+exports.upload = exports.fullImagesPath = exports.usersImagesPath = exports.imageLimit = void 0;
 
 var _multer = _interopRequireDefault(require("multer"));
 
@@ -11,6 +11,8 @@ var _path = _interopRequireDefault(require("path"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const imageLimit = 10500000;
+exports.imageLimit = imageLimit;
 const usersImagesPath = `/uploads/images`;
 exports.usersImagesPath = usersImagesPath;
 const fullImagesPath = `${_path.default.join(__dirname, '../../..')}/public${usersImagesPath}`;

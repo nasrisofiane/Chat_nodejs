@@ -34,7 +34,7 @@ const PrivateChat = (props) => {
     }
 
     return (
-        <div className="container align-items-center m-0 p-0 justify-content-center">
+        <div className="container m-0 p-0 d-flex flex-column align-items-stretch justify-content-center">
             <div className="row-fluid font-weight-normal" id="username-container">
                 <p className="rounded-0 alert m-0 p-2 fade show alert-success text-center col-xl-6  lead">{props.usernameMessage}</p>
             </div>
@@ -50,9 +50,9 @@ const PrivateChat = (props) => {
                 <p className="w-100 d-flex align-items-center justify-content-start m-0 pl-3"><i onClick={props.goToPublicChat} className="p-2 fas fa-arrow-left"></i></p>
             </div>
 
-            <div id="chat-container" className="row-fluid bg-light p-3">
+            <div id="chat-container" className="col bg-light p-3 d-flex flex-column justify-content-between">
 
-                <div className="col-sm-12 lead" ref={props.chatAreaDOM} id="chat-area" >
+                <div className="col lead" ref={props.chatAreaDOM} id="chat-area" >
                     {Array.isArray(props.conversation.messages) ? props.conversation.messages.map((message, index) => { return <Message key={index} message={message} /> }) : null}
                 </div>
                 <div className="container">

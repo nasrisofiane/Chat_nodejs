@@ -5,7 +5,7 @@ html{
 #chat-area{
     overflow-y: auto;
     overflow-x: hidden;
-    height: 300px;
+    min-height: 300px;
 }
 
 #users-list{
@@ -20,6 +20,11 @@ html{
 
 #loading-container{
     z-index: 1;
+}
+
+.instructions{
+    background-color: #d4edda;
+    font-size: 0.8em;
 }
 
 #loading-module{

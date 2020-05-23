@@ -325,14 +325,15 @@ const sendJoinedChatMessageBroadcaster = (session) => {
 const sendLeavedChatMessageBroadcaster = (socket, callback) => {
 
     // Send a message to the chat to alert that the user leaved the chat
-    // webSockets.sockets.emit(
-    //     'message',
-    //     {
-    //         messageType: messageType.DISCONNECTED,
-    //         username: socket.handshake.session.username,
-    //         message: 'leaved the chat'
-    //     }
-    // );
+    webSockets.sockets.emit(
+        'message',
+        {
+            messageType: messageType.DISCONNECTED,
+            username: socket.handshake.session.username,
+            message: 'leaved the chat'
+        }
+    );
+
     socket.handshake.session.destroy(err =>{
         if(err){
             callback(false, null);

@@ -36,10 +36,19 @@ const startWebsocketsApp = (server, session, database) => {
     socket.on('disconnect', () => {
       if (socketsPerUser(socket) === 0) {
         getConnectedUsers(socket);
-        socket.handshake.session.socketId = null;
-        socket.handshake.session.cookie.maxAge = new Date(new Date().getTime() + 60 * 60000);
-        socket.handshake.session.save();
+
+        if (socket.handshake.session) {
+          socket.handshake.session.socketId = null;
+          socket.handshake.session.cookie.maxAge = new Date(new Date().getTime() + 60 * 60000);
+          socket.handshake.session.save();
+        }
       }
+    });
+    socket.on('deleteAccount', (message, callback) => {
+      //On deleteAccount, give answer to the client with an action to perform is 'isDestroyed' is equal to true
+      sendLeavedChatMessageBroadcaster(socket, (isDestroyed, action) => {
+        callback(isDestroyed, action);
+      });
     });
 
     if (!username) {
@@ -283,22 +292,21 @@ const sendJoinedChatMessageBroadcaster = session => {
 
 exports.sendJoinedChatMessageBroadcaster = sendJoinedChatMessageBroadcaster;
 
-const sendLeavedChatMessageBroadcaster = (session, callback) => {
-  //Send a message to the chat to alert that the user leaved the chat
+const sendLeavedChatMessageBroadcaster = (socket, callback) => {
+  // Send a message to the chat to alert that the user leaved the chat
   webSockets.sockets.emit('message', {
     messageType: messageType.DISCONNECTED,
-    username: session.username,
+    username: socket.handshake.session.username,
     message: 'leaved the chat'
   });
-
-  if (webSockets.sockets.clients().connected[session.socketId]) {
-    let socketSession = webSockets.sockets.clients().connected[session.socketId];
-
-    if (socketSession.handshake.session.username == session.username) {
-      socketSession.disconnect();
-      socketSession.handshake.session.destroy(err => callback());
+  socket.handshake.session.destroy(err => {
+    if (err) {
+      callback(false, null);
+    } else {
+      callback(true, 'window.location.reload()');
+      socket.disconnect();
     }
-  }
+  });
 };
 
 exports.sendLeavedChatMessageBroadcaster = sendLeavedChatMessageBroadcaster;

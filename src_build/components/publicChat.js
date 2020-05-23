@@ -31,7 +31,7 @@ const PublicChat = props => {
   };
 
   return /*#__PURE__*/_react.default.createElement("div", {
-    className: "container m-0 p-0 align-items-center justify-content-center"
+    className: "container m-0 p-0 d-flex flex-column align-items-stretch justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: "row-fluid font-weight-normal",
     id: "username-container"
@@ -45,9 +45,9 @@ const PublicChat = props => {
     prepareConversation: props.prepareConversation
   }) : null, /*#__PURE__*/_react.default.createElement("div", {
     id: "chat-container",
-    className: "row-fluid bg-light p-3"
+    className: "col bg-light p-3 d-flex flex-column justify-content-between"
   }, /*#__PURE__*/_react.default.createElement("div", {
-    className: "col-sm-12 lead",
+    className: "col lead",
     ref: props.chatAreaDOM,
     id: "chat-area"
   }, props.messagesReceived.length ? props.messagesReceived.map((message, index) => /*#__PURE__*/_react.default.createElement(_message.default, {
@@ -69,10 +69,10 @@ const PublicChat = props => {
     onClick: () => sendMessage()
   }, /*#__PURE__*/_react.default.createElement("i", {
     className: "fas fa-paper-plane"
-  })), /*#__PURE__*/_react.default.createElement("a", {
+  })), /*#__PURE__*/_react.default.createElement("button", {
     className: "rounded-0 col-sm-1 btn btn-danger align-self-end",
     id: "disconnect-button",
-    href: "/logout"
+    onClick: props.logOut
   }, /*#__PURE__*/_react.default.createElement("i", {
     className: "fas fa-sign-out-alt"
   }))))));

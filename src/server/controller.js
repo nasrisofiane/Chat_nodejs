@@ -50,10 +50,10 @@ export const chat = (req, res) => {
  * Check sent image and username if that correspond to the rules and redirect to the depending view.
  */
 export const login = (req, res) => {
-    
+
     //Allow only alphanumeric character and delete all other characters.
     let username = req.body.username.replace(/[^A-Z0-9]/ig, "");
-    
+
     if (!username.length && !req.file) {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.EMPTY_FIELDS, res);
     }
@@ -64,14 +64,28 @@ export const login = (req, res) => {
         setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.NO_USERNAME, res);
     }
     else if (!req.session.username) {
-        if(req.file.size > imageLimit) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
+        if (req.file.size > imageLimit) return setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.FILE_SIZE, res);
 
         if (username.length <= 8) {
+
+            let newUsername = '';
+
+            for (let i = 0; i < username.length; i++) {
+
+                if (i == 0) {
+                    newUsername += username[i].toUpperCase();
+                }
+                else {
+                    newUsername += username[i].toLowerCase();
+                }
+
+            }
+
             //Settings for the database query
             let querySettings = {
                 limit: 0,
                 searchByFields: {
-                    username: username
+                    "session.username" :  newUsername  
                 }
             }
 
@@ -86,7 +100,7 @@ export const login = (req, res) => {
                 }
                 else {
                     //Attach the username to his current session
-                    req.session.username = username;
+                    req.session.username = newUsername;
 
                     //Attach the correct path to the user's image
                     req.session.image = `${usersImagesPath}/${req.file.filename}`;
@@ -97,7 +111,7 @@ export const login = (req, res) => {
                 }
             });
         }
-        else{
+        else {
             setSessionErrorMessages(req.session, errorMessagesEnum.LOGIN.USERNAME_LENGTH, res);
         }
 

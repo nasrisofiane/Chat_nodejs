@@ -124,7 +124,7 @@ const ChatManager = (props) => {
             />
 
             <div className="container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center">
-                <section className="rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center" id="section-container">
+                <section className="rounded-0 container p-0 m-0 h-100 d-flex align-items-sm-strech align-items-md-center justify-content-center" id="section-container">
                     {isLoaded ? null : <Loading/>}
                     {windowDisplayer()}
                 </section>

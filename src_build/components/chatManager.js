@@ -15,6 +15,8 @@ var _socketManager = _interopRequireDefault(require("./socketManager"));
 
 var _loading = _interopRequireDefault(require("./loading"));
 
+var _testUtils = require("react-dom/test-utils");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -46,6 +48,17 @@ const ChatManager = props => {
         };
       });
     }
+  };
+  /**
+   * Delete the user's session once the session is destroyed, an action is sent from server and parse with eval.
+   */
+
+
+  const logOut = () => {
+    props.socket.emit('deleteAccount', null, (isDestroyed, action) => {
+      let reload = new Function(action);
+      isDestroyed ? reload() : null;
+    });
   };
 
   const chatIsReady = () => {
@@ -97,6 +110,7 @@ const ChatManager = props => {
         messagesReceived: messagesReceived,
         usernameMessage: usernameMessage,
         users: users,
+        logOut: logOut,
         chatIsReady: chatIsReady,
         myInformations: myInformations,
         chatAreaDOM: chatAreaDOM,
@@ -106,6 +120,7 @@ const ChatManager = props => {
     } else if (!errorMessage && talkTo) {
       return /*#__PURE__*/_react.default.createElement(_privateChat.default, {
         user: talkTo,
+        logOut: logOut,
         conversation: privateConversations[talkTo.username],
         usernameMessage: usernameMessage,
         myInformations: myInformations,
@@ -132,7 +147,7 @@ const ChatManager = props => {
   }), /*#__PURE__*/_react.default.createElement("div", {
     className: "container-fluid m-0 p-0 h-100 bg-secondary d-flex align-items-center justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("section", {
-    className: "rounded-0 container p-0 m-0 h-100 d-flex align-items-center justify-content-center",
+    className: "rounded-0 container p-0 m-0 h-100 d-flex align-items-sm-strech align-items-md-center justify-content-center",
     id: "section-container"
   }, isLoaded ? null : /*#__PURE__*/_react.default.createElement(_loading.default, null), windowDisplayer())));
 };

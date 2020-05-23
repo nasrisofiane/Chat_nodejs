@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.login = exports.logout = exports.chat = void 0;
+exports.login = exports.chat = void 0;
 
 var _multerConfig = require("./utils/multerConfig.js");
 
@@ -55,21 +55,11 @@ const chat = (req, res) => {
   }
 };
 /**
- * Will redirect to login once the destroy session has been done.
- */
-
-
-exports.chat = chat;
-
-const logout = (req, res) => {
-  (0, _websockets.sendLeavedChatMessageBroadcaster)(req.session, () => res.redirect('/'));
-};
-/**
  * Check sent image and username if that correspond to the rules and redirect to the depending view.
  */
 
 
-exports.logout = logout;
+exports.chat = chat;
 
 const login = (req, res) => {
   //Allow only alphanumeric character and delete all other characters.
@@ -82,14 +72,24 @@ const login = (req, res) => {
   } else if (!username.length) {
     setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.NO_USERNAME, res);
   } else if (!req.session.username) {
-    if (req.file.size > 10500000) return setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.FILE_SIZE, res);
+    if (req.file.size > _multerConfig.imageLimit) return setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.FILE_SIZE, res);
 
     if (username.length <= 8) {
-      //Settings for the database query
+      let newUsername = '';
+
+      for (let i = 0; i < username.length; i++) {
+        if (i == 0) {
+          newUsername += username[i].toUpperCase();
+        } else {
+          newUsername += username[i].toLowerCase();
+        }
+      } //Settings for the database query
+
+
       let querySettings = {
         limit: 0,
         searchByFields: {
-          username: username
+          "session.username": newUsername
         }
       }; //Get all sessions with query settings passed as parameters
 
@@ -101,7 +101,7 @@ const login = (req, res) => {
           setSessionErrorMessages(req.session, _errorMessages.default.LOGIN.USERNAME_ALREADY_EXISTS, res);
         } else {
           //Attach the username to his current session
-          req.session.username = username; //Attach the correct path to the user's image
+          req.session.username = newUsername; //Attach the correct path to the user's image
 
           req.session.image = `${_multerConfig.usersImagesPath}/${req.file.filename}`;
           req.session.save();

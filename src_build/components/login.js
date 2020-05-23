@@ -13,6 +13,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 const Login = props => {
   const [imageSelected, setImageSelected] = (0, _react.useState)(null);
+  const [username, setUsername] = (0, _react.useState)('');
 
   const uploadFile = _react.default.createRef();
 
@@ -27,6 +28,14 @@ const Login = props => {
     let reader = new FileReader();
     reader.onload = onFileLoaded;
     reader.readAsDataURL(file);
+  };
+
+  const handleUsernameChange = e => {
+    setUsername(e.target.value);
+  };
+
+  const checkLoginAplhanumerics = () => {
+    return /[^A-Z0-9]/ig.test(username);
   };
   /**
    * Take a file in params, retrieve the data url and set the state with the value 
@@ -43,7 +52,7 @@ const Login = props => {
 
   const createErrorMessage = () => {
     return /*#__PURE__*/_react.default.createElement("div", {
-      className: "alert mt-2 mb-1 p-2 alert-dismissible fade show alert-danger",
+      className: "lead rounded-0 alert mt-2 mb-1 p-2 alert-dismissible fade show alert-danger",
       role: "alert"
     }, /*#__PURE__*/_react.default.createElement("p", {
       className: "m-0"
@@ -58,15 +67,15 @@ const Login = props => {
   };
 
   return /*#__PURE__*/_react.default.createElement("div", {
-    className: "row h-100 align-items-center justify-content-center"
+    className: "container-fluid h-100 d-flex align-items-sm-stretch align-items-md-center justify-content-center p-0 m-0"
   }, /*#__PURE__*/_react.default.createElement("div", {
-    className: "col-sm-6 bg-light p-3"
+    className: "col-sm-12 col-md-6 col-xl-4 bg-light p-3 d-flex flex-column justify-content-center align-items-center"
   }, /*#__PURE__*/_react.default.createElement("div", {
-    className: "row justify-content-center"
+    className: "container-fluid mb-5 mb-md-0 justify-content-center"
   }, /*#__PURE__*/_react.default.createElement("h1", {
     className: "text-center display-4"
   }, "Login")), /*#__PURE__*/_react.default.createElement("form", {
-    className: "row justify-content-center",
+    className: "container-fluid d-flex flex-column justify-content-center align-items-center",
     action: "/",
     encType: "multipart/form-data",
     method: "post",
@@ -75,7 +84,8 @@ const Login = props => {
     className: "rounded-0 col-sm-6 m-1 form-control",
     name: "username",
     type: "text",
-    placeholder: "Username"
+    placeholder: "Username",
+    onChange: handleUsernameChange
   }), /*#__PURE__*/_react.default.createElement("input", {
     type: "file",
     ref: uploadFile,
@@ -86,7 +96,7 @@ const Login = props => {
     className: "rounded-0 col-sm-6 btn btn-primary m-1",
     id: "send-username-button"
   }, "Connect")), /*#__PURE__*/_react.default.createElement("div", {
-    className: "row mt-3"
+    className: "container-fluid mt-3"
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: "col-12 d-flex flex-column justify-content-center align-items-center"
   }, /*#__PURE__*/_react.default.createElement("p", {
@@ -98,7 +108,23 @@ const Login = props => {
     height: "50",
     onClick: () => uploadFile.current.click(),
     id: "open-file-dialog"
-  }))), errorMessage ? createErrorMessage() : null));
+  }))), /*#__PURE__*/_react.default.createElement("div", {
+    className: "container-fluid h-100 d-flex flex-column align-items-center justify-content-end",
+    id: "error-box-login"
+  }, errorMessage ? createErrorMessage() : null, /*#__PURE__*/_react.default.createElement("div", {
+    className: "rounded-0 lead mt-2 alert alert-success",
+    role: "alert"
+  }, /*#__PURE__*/_react.default.createElement("h4", {
+    className: "alert-heading"
+  }, "How to connect ?"), /*#__PURE__*/_react.default.createElement("hr", null), /*#__PURE__*/_react.default.createElement("ul", {
+    className: "list-group rounded-0 bg-none"
+  }, /*#__PURE__*/_react.default.createElement("li", {
+    className: `instructions list-group-item rounded-0  ${username.length <= 8 ? 'text-sucess font-weight-normal' : 'text-danger'} `
+  }, /*#__PURE__*/_react.default.createElement("div", null, "Username's maximum length is 8")), /*#__PURE__*/_react.default.createElement("li", {
+    className: `instructions list-group-item rounded-0  ${checkLoginAplhanumerics() ? 'text-danger' : 'text-sucess font-weight-normal'} `
+  }, /*#__PURE__*/_react.default.createElement("div", null, "Only aplhanumerics characters")), /*#__PURE__*/_react.default.createElement("li", {
+    className: `instructions list-group-item rounded-0 ${imageSelected ? 'text-sucess font-weight-normal' : 'text-danger'}`
+  }, /*#__PURE__*/_react.default.createElement("div", null, "Choose a picture")))))));
 };
 
 var _default = Login;

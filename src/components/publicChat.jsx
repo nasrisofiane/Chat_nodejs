@@ -19,15 +19,15 @@ const PublicChat = (props) => {
 
     return (
 
-        <div className="container m-0 p-0 align-items-center justify-content-center">
+        <div className="container m-0 p-0 d-flex flex-column align-items-stretch justify-content-center">
             <div className="row-fluid font-weight-normal" id="username-container">
                 <p className="rounded-0 alert m-0 p-2 fade show alert-success text-center col-xl-6  lead">{props.usernameMessage}</p>
             </div>
             {props.users ? <UsersList chatIsReady={props.chatIsReady} myInformations={props.myInformations} privateConversations={props.privateConversations} users={props.users} prepareConversation={props.prepareConversation} /> : null}
-            <div id="chat-container" className="row-fluid bg-light p-3">
+            <div id="chat-container" className="col bg-light p-3 d-flex flex-column justify-content-between">
 
 
-                <div className="col-sm-12 lead" ref={props.chatAreaDOM} id="chat-area" >
+                <div className="col lead" ref={props.chatAreaDOM} id="chat-area" >
                     {props.messagesReceived.length ? props.messagesReceived.map((message, index) => <Message key={index} message={message} />) : null}
                 </div>
                 <div className="container">
